@@ -58,11 +58,16 @@ button {
   background-color: darkslateblue;
 }
 
+.puzzle-wrapper {
+  display: grid;
+  place-items: center;
+}
+
 .puzzle {
   --item-size: 2.25rem;
 
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(3, var(--item-size));
   place-items: center;
   gap: calc(var(--item-size) / 4)
 }
