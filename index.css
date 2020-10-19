@@ -1,0 +1,132 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+
+:root {
+  --color-light: #efefef;
+  --background-color: var(--color-light);
+  --foreground-color: #202124;
+  --cell-color: #174f74;
+  --puzzle-cursor-color-highlighted: #177441;
+  --puzzle-cursor-color: #80134f;
+  --border-radius: 3px;
+
+  --transition-duration-fast: 100ms;
+  --button-box-shadow:
+    inset 0px 2px 1px -1px rgba(255, 255, 255, .5),
+    0px 2px 1px rgba(0, 0, 0, .16);
+}
+
+body {
+  display: grid;
+  min-height: 80vh;
+  margin: 0;
+  background-color: var(--background-color);
+  font-family: monospace;
+  font-size: 1.125rem;
+  color: var(--foreground-color);
+}
+
+main {
+  display: grid;
+  justify-self: center;
+  grid-template-columns: 1fr;
+  place-content: center;
+  place-items: center;
+  padding: 2rem;
+  gap: 3rem;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background-color: var(--puzzle-cursor-color);
+  color: var(--color-light);
+  padding: .45em 1.5em;
+  border-radius: var(--border-radius);
+  box-shadow: var(--button-box-shadow);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+#solve-button {
+  grid-column: 1 / -1;
+  justify-self: center;
+  background-color: darkslateblue;
+}
+
+.puzzle {
+  --item-size: 2.25rem;
+
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  place-items: center;
+  gap: calc(var(--item-size) / 4)
+}
+
+.puzzle-item,
+.puzzle-cursor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--border-radius);
+  width: var(--item-size);
+  height: var(--item-size);
+  font-weight: bold;
+  background-color: var(--cell-color);
+  color: var(--color-light);
+  box-shadow: var(--button-box-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.puzzle-item[draggable] {
+  cursor: grab;
+}
+
+.puzzle-item[draggable]:hover {
+  background-color: var(--puzzle-cursor-color-highlighted);
+}
+
+button::after,
+.puzzle-item::after,
+.puzzle-cursor::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  width: 200%;
+  height: 200%;
+  background-color: rgba(255, 255, 255, .16);
+  border-radius: 100vw;
+  transition:
+    top ease-in-out var(--transition-duration-fast),
+    left ease-in-out var(--transition-duration-fast);
+}
+
+button:hover::after,
+.puzzle-item:hover::after,
+.puzzle-cursor:hover::after {
+  top: -50%;
+  left: -50%;
+}
+
+.puzzle-cursor {
+  background-color: var(--puzzle-cursor-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #202124;
+    --foreground-color: var(--color-light);
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+}
