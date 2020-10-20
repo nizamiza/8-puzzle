@@ -50,13 +50,44 @@ class Puzzle {
     this._cursorColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--puzzle-cursor-color') || 'purple';
 
-    this.container = document.querySelector(containerId);
-    this.items = Array.from(document.querySelectorAll(`${containerId} ${itemClassName}`));
-    this.cursor = document.querySelector(`${containerId} ${cursorId}`);
+    this.container = document.getElementById(containerId);
+    this.cursor = document.getElementById(cursorId);
+    this.items = Array.from(document.querySelectorAll(`#${containerId} ${itemClassName}`));
 
     this._addEventListeners();
     this._mapItemsPositions();
     this._setAvailableItems();
+  }
+
+  getState() {
+    const { col: cursorCol, row: cursorRow } = this._cursorPosition;
+    const state = [];
+
+    state[cursorCol + cursorRow * 3] = 0;
+
+    this.items.forEach((item, index) => {
+      const { col, row } = this._itemsPositions[index];
+      state[col + row * 3] = Number.parseInt(item.textContent);
+    });
+
+    return state;
+  }
+
+  /** @param {[number]} state */
+  setState(state) {
+    state.forEach((itemValue, index) => {
+      const newPosition = {
+        col: index % 3,
+        row: Math.floor(index / 3),
+      };
+
+      if (itemValue === 0) {
+        Puzzle.setItemGridPosition(this.cursor, newPosition);
+      } else {
+        this.items[index].textContent = itemValue;
+        Puzzle.setItemGridPosition(this._itemsPositions[index], newPosition);
+      }
+    })
   }
 
   /** @param {DragEvent} event */
@@ -76,18 +107,14 @@ class Puzzle {
 
   /** @param {DragEvent} event */
   handleDragEnter(event) {
-    if (!this._dragEventTargetIsCursor(event))
-      return;
-
-    this.cursor.style.backgroundColor = this._cursorColorHighlighted;
+    if (this._dragEventTargetIsCursor(event))
+      this.cursor.style.backgroundColor = this._cursorColorHighlighted;
   }
 
   /** @param {DragEvent} event */
   handleDragLeave(event) {  
-    if (!this._dragEventTargetIsCursor(event))
-      return;
-
-    this.cursor.style.backgroundColor = this._cursorColor;
+    if (this._dragEventTargetIsCursor(event))
+      this.cursor.style.backgroundColor = this._cursorColor;
   }
 
   /** @param {DragEvent} event */
@@ -133,7 +160,7 @@ class Puzzle {
 
   /** @param {DragEvent} event */
   _dragEventTargetIsCursor(event) {
-    return event.target.id === this._selectors.cursorId.replace('#', '');
+    return event.target.id === this._selectors.cursorId;
   }
   
   _addEventListeners() {
