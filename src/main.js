@@ -20,7 +20,10 @@ const main = () => {
   });
 
   solveButton.addEventListener('click', () => {
-    solvePuzzle(initialState.getState(), targetState.getState());
+    initialState.setState(solvePuzzle({
+      initialState: initialState.getState(),
+      targetState: targetState.getState(),
+    }));
   });
 }
 
