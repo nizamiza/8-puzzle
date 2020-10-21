@@ -1,4 +1,7 @@
 /**
+ * Based on work by © Marijn Haverbeke, 2007
+ * @see https://eloquentjavascript.net/1st_edition/appendix2.html
+ * 
  * @template T
  */
 class MinHeap {

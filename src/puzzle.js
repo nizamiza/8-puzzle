@@ -1,3 +1,5 @@
+import {range} from './utils.js';
+
 class Puzzle {
   /** @type {HTMLElement} */
   container;
@@ -18,48 +20,48 @@ class Puzzle {
    */
 
   /** @type {PuzzleItemPosition[]} */
-  _itemsPositions = [];
+  _itemsPositions;
 
   /** @type {PuzzleItemPosition} */
-  _cursorPosition = {
-    col: 2,
-    row: 2,
-  };
+  _cursorPosition;
 
   /** @type {HTMLElement} */
-  _selectedItem = null;
+  _selectedItem;
 
-  _cursorColorHighlighted = '';
-  _cursorColor = '';
+  /** @type {string} */
+  _cursorColorHighlighted;
+
+  /** @type {string} */
+  _cursorColor;
 
   /**
    * @typedef PuzzleSelectors
    * @property {string} containerId
+   * @property {string} cursorClassName
    * @property {string} cursorId
    * @property {string} itemClassName
    */
 
-  /** @type {PuzzleSelectors} */
-  _selectors = {
-    containerId: '',
-    cursorId: '',
-    itemClassName: '',
-  }
-
   /**
-   * @param {object} params
-   * @param {PuzzleSelectors} params.selectors
-   * @param {number} params.size
+   * @typedef PuzzleParams
+   * @property {PuzzleSelectors} selectors
+   * @property {number} size
    */
+
+  /** @type {PuzzleSelectors} */
+  _selectors;
+
+  /** @param {PuzzleParams} params */
   constructor({
     selectors: {
       containerId,
+      cursorClassName = 'puzzle-cursor',
       cursorId,
-      itemClassName = '.puzzle-item',
+      itemClassName = 'puzzle-item',
     },
-    size = 3,
+    size,
   }) {
-    this._selectors = {containerId, cursorId, itemClassName}
+    this._selectors = {containerId, cursorClassName, cursorId, itemClassName}
 
     this._cursorColorHighlighted = getComputedStyle(document.documentElement)
       .getPropertyValue('--puzzle-cursor-color-highlighted') || 'green';
@@ -68,24 +70,26 @@ class Puzzle {
       .getPropertyValue('--puzzle-cursor-color') || 'purple';
 
     this.size = size;
-    this.container = document.getElementById(containerId);
-    this.cursor = document.getElementById(cursorId);
-    this.items = Array.from(document.querySelectorAll(`#${containerId} ${itemClassName}`));
+    this.items = [];
 
+    this._itemsPositions = [];
+    this._selectedItem = null;
+
+    this.container = document.getElementById(containerId);
+
+    this._renderPuzzle();
     this._addEventListeners();
-    this._mapItemsPositions();
-    this._setAvailableItems();
   }
 
   getState() {
     const {col: cursorCol, row: cursorRow} = this._cursorPosition;
     const state = [];
 
-    state[cursorCol + cursorRow * 3] = 0;
+    state[cursorCol + cursorRow * this.size] = 0;
 
     this.items.forEach((item, index) => {
       const { col, row } = this._itemsPositions[index];
-      state[col + row * 3] = Number.parseInt(item.textContent);
+      state[col + row * this.size] = Number.parseInt(item.textContent);
     });
 
     return state;
@@ -101,13 +105,15 @@ class Puzzle {
     Puzzle.setItemGridPosition(this.cursor, this._cursorPosition);
 
     stateItems.forEach(({value, positionIndex}, index) => {
+      const itemPosition = Puzzle.getItemPosition(positionIndex, this.size);
+      
       this.items[index].textContent = value;
+      this._itemsPositions[index] = itemPosition;
 
-      Puzzle.setItemGridPosition(
-        this.items[index],
-        Puzzle.getItemPosition(positionIndex, this.size)
-      );
-    })
+      Puzzle.setItemGridPosition(this.items[index], itemPosition);
+    });
+
+    this._setAvailableItems();
   }
 
   /** @param {DragEvent} event */
@@ -156,21 +162,13 @@ class Puzzle {
     this._setAvailableItems();
   }
 
-  _mapItemsPositions() {
-    this._itemsPositions = this.items.map((_item, index) => {
-      return Puzzle.getItemPosition(index, this.size);
-    });
-  }
-
-  _setAvailableItems() {
-    this.items.forEach((item, index) => {
-      const itemPosition = this._itemsPositions[index];
-
-      if (!Puzzle.itemIsMoveable(this._cursorPosition, itemPosition))
-        item.removeAttribute('draggable');
-
-      else item.setAttribute('draggable', 'true');
-    })
+  removeEventListeners() {
+    document.removeEventListener('dragstart',  this.handleDragStart);
+    document.removeEventListener('dragend',    this.handleDragEnd);
+    document.removeEventListener('dragover',   this.handleDragOver);
+    document.removeEventListener('dragenter',  this.handleDragEnter);
+    document.removeEventListener('dragleave',  this.handleDragLeave);
+    document.removeEventListener('drop',       this.handleDrop);
   }
 
   /** @param {DragEvent} event */
@@ -194,6 +192,48 @@ class Puzzle {
     document.addEventListener('drop',       this.handleDrop);
   }
 
+  _setAvailableItems() {
+    this.items.forEach((item, index) => {
+      const itemPosition = this._itemsPositions[index];
+
+      if (!Puzzle.getItemMoveDirection(this._cursorPosition, itemPosition))
+        item.removeAttribute('draggable');
+
+      else item.setAttribute('draggable', 'true');
+    })
+  }
+
+  _renderPuzzle() {
+    this.container.innerHTML = '';
+
+    this.container.style.setProperty('--size', this.size);
+    this.cursor = document.createElement('div');
+
+    this.cursor.id = this._selectors.cursorId;
+    this.cursor.className = this._selectors.cursorClassName;
+
+    range(1, this.size * this.size).forEach((itemValue, index) => {
+      const item = document.createElement('div');
+
+      item.className = this._selectors.itemClassName;
+      item.textContent = itemValue;
+
+      this.items.push(item);
+      this._itemsPositions.push(Puzzle.getItemPosition(index, this.size));
+
+      this.container.appendChild(item);
+    });
+
+    this.container.appendChild(this.cursor);
+    
+    this._cursorPosition = {
+      col: this.size - 1,
+      row: this.size - 1,
+    };
+
+    this._setAvailableItems();
+  }
+
   /**
    * @param {HTMLElement} item 
    * @param {PuzzleItemPosition} position 
@@ -206,14 +246,24 @@ class Puzzle {
   }
 
   /**
+   * @typedef {'down' | 'up' | 'right' | 'left'} PuzzleItemMoveDirection
    * @param {PuzzleItemPosition} cursorPosition 
    * @param {PuzzleItemPosition} itemPosition
+   * @returns {PuzzleItemMoveDirection}
    */
-  static itemIsMoveable({col: cursorCol, row: cursorRow}, {col: itemCol, row: itemRow}) {
-    const cannotMoveVertically = Math.abs(cursorCol - itemCol) === 1 && cursorRow === itemRow
-    const cannotMoveHorizontally = Math.abs(cursorRow - itemRow) === 1 && cursorCol === itemCol
+  static getItemMoveDirection({col: cursorCol, row: cursorRow}, {col: itemCol, row: itemRow}) {
+    const verticalDelta = cursorCol - itemCol;
+    const horizontalDelta = cursorRow - itemRow;
+    
+    if (Math.abs(verticalDelta) === 1 && cursorRow === itemRow) {
+      return verticalDelta === 1 ? 'right' : 'left';
+    }
 
-    return cannotMoveVertically || cannotMoveHorizontally;
+    if (Math.abs(horizontalDelta) === 1 && cursorCol === itemCol) {
+      return horizontalDelta === 1 ? 'down' : 'up';
+    }
+
+    return null;
   };
 
   /**
@@ -221,7 +271,7 @@ class Puzzle {
    * @param {number} puzzleSize
    * @returns {PuzzleItemPosition}
    */
-  static getItemPosition(itemIndex, puzzleSize = 3) {
+  static getItemPosition(itemIndex, puzzleSize) {
     return {
       col: itemIndex % puzzleSize,
       row: Math.floor(itemIndex / puzzleSize),

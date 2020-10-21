@@ -9,35 +9,67 @@
 </head>
 <body>
   <main>
+    <p class="description">Select puzzle options and hit generate.</p>
+    <form class="form" id="puzzle-form">
+      <label for="puzzle-size">Puzzle size (current = 3):</label>
+      <input
+        type="range"
+        id="puzzle-size"
+        name="puzzle-size"
+        list="puzzle-sizes"
+        min="3"
+        max="10"
+        value="3"
+      >
+      <datalist id="puzzle-sizes">
+        <option value="3" label="3"></option>
+        <option value="4" label="4"></option>
+        <option value="5" label="5"></option>
+        <option value="6" label="6"></option>
+        <option value="7" label="7"></option>
+        <option value="8" label="8"></option>
+        <option value="9" label="9"></option>
+        <option value="10" label="10"></option>
+      </datalist>
+      <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
+    </form>
     <section class="puzzle-wrapper">
       <h3>Initial state:</h3>
-      <section id="initial-state" class="puzzle">
-        <div class="puzzle-item">1</div>
-        <div class="puzzle-item">2</div>
-        <div class="puzzle-item">3</div>
-        <div class="puzzle-item">4</div>
-        <div class="puzzle-item">5</div>
-        <div class="puzzle-item">6</div>
-        <div class="puzzle-item">7</div>
-        <div class="puzzle-item">8</div>
-        <div class="puzzle-cursor" id="initial-state-cursor"></div>
-      </section>
+      <section id="initial-state" class="puzzle"></section>
+      <button class="puzzle-randomize-button" id="initial-state-randomize-button">
+        Randomize
+      </button>
+      <button class="puzzle-reset-button" id="initial-state-reset-button">
+        Reset
+      </button>
     </section>
     <section class="puzzle-wrapper">
       <h3>Target state:</h3>
-      <section id="target-state" class="puzzle">
-        <div class="puzzle-item">1</div>
-        <div class="puzzle-item">2</div>
-        <div class="puzzle-item">3</div>
-        <div class="puzzle-item">4</div>
-        <div class="puzzle-item">5</div>
-        <div class="puzzle-item">6</div>
-        <div class="puzzle-item">7</div>
-        <div class="puzzle-item">8</div>
-        <div class="puzzle-cursor" id="target-state-cursor"></div>
-      </section>
+      <section id="target-state" class="puzzle"></section>
+      <button class="puzzle-randomize-button" id="target-state-randomize-button">
+        Randomize
+      </button>
+      <button class="puzzle-reset-button" id="target-state-reset-button">
+        Reset
+      </button>
     </section>
-    <button id="solve-button">Solve</button>
+    <form class="form" id="solve-puzzle-form">
+      <label for="heuristic-type">Heuristic type:</label>
+      <select
+        type="text"
+        id="heuristic-type"
+        name="heuristic-type"
+        value="incorrect-items-count"
+      >
+        <option value="incorrect-items-count">Incorrect items count</option>
+        <option value="manhattan">Manhattan streets</option>
+      </select>
+      <button class="form-submit-button" id="solve-button" type="submit">Solve</button>
+    </form>
+    <h4 id="solution-title">Solution steps:</h4>
+    <section id="solution-steps">
+      Solution steps will appear here...
+    </section>
   </main>
 </body>
 </html>
