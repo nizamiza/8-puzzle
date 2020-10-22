@@ -1,4 +1,4 @@
-import Puzzle from '../puzzle.js';
+import Puzzle from '../components/puzzle.js';
 import {range, generateRandomState} from '../utils.js';
 
 

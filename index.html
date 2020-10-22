@@ -9,7 +9,6 @@
 </head>
 <body>
   <main>
-    <p class="description">Select puzzle options and hit generate.</p>
     <form class="form" id="puzzle-form">
       <label for="puzzle-size">Puzzle size (current = 3):</label>
       <input
@@ -18,18 +17,13 @@
         name="puzzle-size"
         list="puzzle-sizes"
         min="3"
-        max="10"
+        max="5"
         value="3"
       >
       <datalist id="puzzle-sizes">
         <option value="3" label="3"></option>
         <option value="4" label="4"></option>
         <option value="5" label="5"></option>
-        <option value="6" label="6"></option>
-        <option value="7" label="7"></option>
-        <option value="8" label="8"></option>
-        <option value="9" label="9"></option>
-        <option value="10" label="10"></option>
       </datalist>
       <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
     </form>
@@ -64,6 +58,14 @@
         <option value="incorrect-items-count">Incorrect items count</option>
         <option value="manhattan">Manhattan streets</option>
       </select>
+      <label for="minimized-output">
+        <input type="checkbox" id="minimized-output" name="minimized-output">
+        Minimize output
+      </label>
+      <label for="minimized-output">
+        <input type="checkbox" id="reversed-steps" name="reversed-steps">
+        Reverse steps
+      </label>
       <button class="form-submit-button" id="solve-button" type="submit">Solve</button>
     </form>
     <h4 id="solution-title">Solution steps:</h4>

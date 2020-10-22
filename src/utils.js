@@ -27,3 +27,19 @@ export const generateRandomState = (puzzleSize) => {
 		return [...state, itemValue];
 	}, []);
 };
+
+
+/**
+ * @template T
+ * @param {[T]} array
+ * @param {number} indexA
+ * @param {number} indexB
+ * @returns {[T]} New array with swapped items at original indices A and B.
+ */
+export const swapArrayElements = (array, indexA, indexB) => {
+  return array.map((value, index) => {
+    if (index === indexA) return array[indexB];
+    if (index === indexB) return array[indexA];
+    return value;
+  })
+};

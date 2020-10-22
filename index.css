@@ -8,7 +8,7 @@
   --background-color: var(--color-light);
   --foreground-color: #202124;
   --cell-color: #0765a3;
-  --puzzle-cursor-color-highlighted: #0a9649;
+  --cell-highlighted-color: #0a9649;
   --puzzle-cursor-color: #a5055d;
   --border-radius: 3px;
   --translucent-black: rgba(0, 0, 0, .12);
@@ -24,8 +24,7 @@ body {
   min-height: 80vh;
   margin: 0;
   background-color: var(--background-color);
-  font-family: monospace;
-  font-size: 1.125rem;
+  font-family: 'Consolas', monospace;
   color: var(--foreground-color);
 }
 
@@ -103,8 +102,19 @@ input {
   color: inherit;
 }
 
-input[type="range"] {
+input[type="range"],
+input[type="checkbox"] {
   cursor: pointer;
+}
+
+label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+label :first-child {
+  margin-right: .75em;
 }
 
 select {
@@ -121,6 +131,7 @@ select {
   opacity: 0;
   transform: scaleY(0);
   transition: transform ease-in-out 250ms, opacity ease-in-out 500ms;
+
 }
 
 #solve-puzzle-form[data-open] {
@@ -128,6 +139,7 @@ select {
   transform: scaleY(1);
 }
 
+.solution-step-puzzle,
 .puzzle {
   --size: 3;
   --item-size: 2.25rem;
@@ -161,7 +173,7 @@ select {
 }
 
 .puzzle-item[draggable]:hover {
-  background-color: var(--puzzle-cursor-color-highlighted);
+  background-color: var(--cell-highlighted-color);
 }
 
 button::after,
@@ -209,6 +221,12 @@ button:hover::after,
   padding: 1rem;
   place-content: center;
   border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+#solution-steps[data-solving="true"] {
+  background-color: darkslateblue;
 }
 
 #solution-title {
@@ -219,8 +237,13 @@ button:hover::after,
 .solution-step {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
+  place-items: center;
   gap: 1rem;
+  background-color: rgba(255, 240, 255, .08);
+  padding: inherit;
+  border-radius: inherit;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 300px;
 }
 
 .solution-step-item {
@@ -235,13 +258,21 @@ button:hover::after,
   content: ':';
 }
 
+.solution-step-puzzle {
+  grid-column: 1 / -1;
+}
+
+.solution-step-message {
+  margin: 0;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-light: #efefef;
     --background-color: #202124;
     --foreground-color: var(--color-light);
     --cell-color: #174f74;
-    --puzzle-cursor-color-highlighted: #177441;
+    --cell-highlighted-color: #177441;
     --puzzle-cursor-color: #80134f;
   }
 }

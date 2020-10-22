@@ -1,7 +1,8 @@
-import Puzzle from './puzzle.js';
-import {handleForm, handleInput} from './puzzle-form.js';
+import Puzzle from './components/puzzle.js';
+import SolutionStepsAssembler from './components/solution-steps-assembler.js';
+import {handleForm, handleInput} from './components/puzzle-form.js';
+import solvePuzzle from './components/puzzle-solver.js';
 import {manhattanDistance, invalidPlacedItemsCount} from './heuristics.js'
-import solvePuzzle from './puzzle-solver.js';
 import runTests from './tests/puzzle-tests.js';
 import {generateRandomState, range} from './utils.js';
 
@@ -34,7 +35,6 @@ const main = () => {
 
   const puzzleSizeInputId = 'puzzle-size';
   const puzzleSizeLabel = document.querySelector(`label[for="${puzzleSizeInputId}"]`);
-  const puzzleSolutionStepsContainer = document.getElementById('solution-steps');
 
   const initialStateRandomizeButton = document.getElementById('initial-state-randomize-button');
   const targetStateRandomizeButton = document.getElementById('target-state-randomize-button');
@@ -42,10 +42,16 @@ const main = () => {
   const initialStateResetButton = document.getElementById('initial-state-reset-button');
   const targetStateResetButton = document.getElementById('target-state-reset-button');
 
-  puzzleSizeLabel.textContent = puzzleSizeLabel.textContent.replace(
-    /\d+/,
-    document.getElementById(puzzleSizeInputId).value
-  );
+  if (puzzleSizeLabel) {
+    puzzleSizeLabel.textContent = puzzleSizeLabel?.textContent.replace(
+      /\d+/,
+      document.getElementById(puzzleSizeInputId).value
+    );
+
+    handleInput(puzzleSizeInputId, (event) => {
+      puzzleSizeLabel.textContent = puzzleSizeLabel.textContent.replace(/\d+/, event.target.value);
+    });
+  }
 
   let initialStatePuzzle;
   let targetStatePuzzle;
@@ -69,28 +75,41 @@ const main = () => {
 
   handleForm(solvePuzzleFormId, (formData) => {
     const heuristicType = formData.get('heuristic-type');
+    const minimizeOutput = formData.get('minimized-output');
+    const reverseSteps = formData.get('reversed-steps');
 
     if (heuristicType === 'manhattan')
       heuristicFunction = manhattanDistance;
+
     else if (heuristicType === 'incorrect-items-count')
       heuristicFunction = invalidPlacedItemsCount;
 
-    if (!initialStatePuzzle || !targetStatePuzzle) {
-      [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
-    }
-
-    solvePuzzle({
-      initialState: initialStatePuzzle.getState(),
-      targetState: targetStatePuzzle.getState(),
-      heuristicFunction,
+    const solutionStepsAssembler = new SolutionStepsAssembler({
       puzzleSize,
-      solutionStepsContainer: puzzleSolutionStepsContainer,
-    })
-  })
+      selectors: {
+        containerId: 'solution-steps',
+      },
+    });
 
-  handleInput(puzzleSizeInputId, (event) => {
-    puzzleSizeLabel.textContent = puzzleSizeLabel.textContent.replace(/\d+/, event.target.value);
-  });
+    if (!initialStatePuzzle || !targetStatePuzzle)
+      [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
+
+    solutionStepsAssembler.setSolving(true);
+
+    setTimeout(() => {
+      solvePuzzle({
+        initialState: initialStatePuzzle.getState(),
+        targetState: targetStatePuzzle.getState(),
+        heuristicFunction,
+        puzzleSize,
+        solutionStepsAssembler,
+        minimizeOutput,
+        reverseSteps,
+      });
+
+      solutionStepsAssembler.setSolving(false);
+    }, 0);
+  })
 
   initialStateRandomizeButton.addEventListener('click', () => {
     if (initialStatePuzzle)

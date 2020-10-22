@@ -1,4 +1,4 @@
-import Puzzle from './puzzle.js'
+import Puzzle from './components/puzzle.js'
 
 
 /**
@@ -17,7 +17,7 @@ export const manhattanDistance = (currentState, targetState, puzzleSize) => {
     const {col: currentCol, row: currentRow} = Puzzle.getItemPosition(currentIndex, puzzleSize);
     const {col: targetCol, row: targetRow} = Puzzle.getItemPosition(targetIndex, puzzleSize);
 
-    return Math.abs(currentCol - targetCol) + Math.abs(currentRow - targetRow);
+    return heuristicValue + Math.abs(currentCol - targetCol) + Math.abs(currentRow - targetRow);
   }, 0);
 };
 

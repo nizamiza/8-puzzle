@@ -1,4 +1,4 @@
-import {range} from './utils.js';
+import {range} from '../utils.js';
 
 class Puzzle {
   /** @type {HTMLElement} */
@@ -29,7 +29,7 @@ class Puzzle {
   _selectedItem;
 
   /** @type {string} */
-  _cursorColorHighlighted;
+  _cellHighlightedColor;
 
   /** @type {string} */
   _cursorColor;
@@ -44,8 +44,10 @@ class Puzzle {
 
   /**
    * @typedef PuzzleParams
+   * @property {boolean} clearContainer
    * @property {PuzzleSelectors} selectors
    * @property {number} size
+   * @property {number[]} state
    */
 
   /** @type {PuzzleSelectors} */
@@ -53,6 +55,7 @@ class Puzzle {
 
   /** @param {PuzzleParams} params */
   constructor({
+    clearContainer = true,
     selectors: {
       containerId,
       cursorClassName = 'puzzle-cursor',
@@ -60,11 +63,13 @@ class Puzzle {
       itemClassName = 'puzzle-item',
     },
     size,
+    state,
   }) {
+    this._clearContainer = clearContainer;
     this._selectors = {containerId, cursorClassName, cursorId, itemClassName}
 
-    this._cursorColorHighlighted = getComputedStyle(document.documentElement)
-      .getPropertyValue('--puzzle-cursor-color-highlighted') || 'green';
+    this._cellHighlightedColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--cell-highlighted-color') || 'green';
 
     this._cursorColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--puzzle-cursor-color') || 'purple';
@@ -77,8 +82,11 @@ class Puzzle {
 
     this.container = document.getElementById(containerId);
 
-    this._renderPuzzle();
+    this._renderPuzzle(clearContainer);
     this._addEventListeners();
+
+    if (state)
+      this.setState(state);
   }
 
   getState() {
@@ -105,12 +113,16 @@ class Puzzle {
     Puzzle.setItemGridPosition(this.cursor, this._cursorPosition);
 
     stateItems.forEach(({value, positionIndex}, index) => {
+      const highlighted = value < 0;
       const itemPosition = Puzzle.getItemPosition(positionIndex, this.size);
       
-      this.items[index].textContent = value;
+      this.items[index].textContent = Math.abs(value);
       this._itemsPositions[index] = itemPosition;
 
       Puzzle.setItemGridPosition(this.items[index], itemPosition);
+
+      if (highlighted)
+        this.items[index].style.backgroundColor = this._cellHighlightedColor;
     });
 
     this._setAvailableItems();
@@ -134,7 +146,7 @@ class Puzzle {
   /** @param {DragEvent} event */
   handleDragEnter(event) {
     if (this._dragEventTargetIsCursor(event))
-      this.cursor.style.backgroundColor = this._cursorColorHighlighted;
+      this.cursor.style.backgroundColor = this._cellHighlightedColor;
   }
 
   /** @param {DragEvent} event */
@@ -203,8 +215,9 @@ class Puzzle {
     })
   }
 
-  _renderPuzzle() {
-    this.container.innerHTML = '';
+  _renderPuzzle(clearContainer) {
+    if (clearContainer)
+      this.container.innerHTML = '';
 
     this.container.style.setProperty('--size', this.size);
     this.cursor = document.createElement('div');
