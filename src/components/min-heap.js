@@ -8,7 +8,7 @@ class MinHeap {
   /** @type {T[]} */
   elements;
 
-  /** @type {(index: number) => number} */
+  /** @type {(element: T) => number} */
   getPriority;
 
   /**
