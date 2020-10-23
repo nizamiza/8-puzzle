@@ -108,7 +108,7 @@ const main = () => {
       });
 
       solutionStepsAssembler.setSolving(false);
-    }, 0);
+    }, 50);
   })
 
   initialStateRandomizeButton.addEventListener('click', () => {
