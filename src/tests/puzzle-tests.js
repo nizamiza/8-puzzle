@@ -33,15 +33,10 @@ export const getPuzzleItemPositionTest = (state, puzzleSize) => {
 };
 
 
-export const puzzleStateTest = (state, puzzleSize) => {
-
-}
-
-
 const runTests = (runsCount = 5) => {
   range(runsCount).forEach(() => {
-    const puzzleSize = Math.round(Math.random() * 7 + 3);
-    const state = generateRandomState(puzzleSize);
+    const puzzleSize = Math.round(Math.random() * 2 + 3);
+    const state = generateRandomState(puzzleSize).currentState;
 
     const {testPassed, passedTestsCount} = getPuzzleItemPositionTest(state, puzzleSize);
 

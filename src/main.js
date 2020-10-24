@@ -74,14 +74,16 @@ const main = () => {
     puzzleWrappers.forEach(wrapper => wrapper.setAttribute('data-open', 'true'));
     solvePuzzleForm.setAttribute('data-open', 'true');
 
-    const incorrectItemsCountHeuristicOption = solvePuzzleForm
-      .querySelector('option[value="incorrect-items-count"');
+    // const puzzleHeuristicSelect = solvePuzzleForm.querySelector('select[name="heuristic-type"]');
+    // const incorrectItemsCountHeuristicOption = solvePuzzleForm
+    //   .querySelector('option[value="incorrect-items-count"');
 
-    if (puzzleSize > 4) {
-      incorrectItemsCountHeuristicOption.setAttribute('disabled', 'true');
-    } else {
-      incorrectItemsCountHeuristicOption.removeAttribute('disabled');
-    }
+    // if (puzzleSize > 4) {
+    //   puzzleHeuristicSelect.value = 'manhattan';
+    //   incorrectItemsCountHeuristicOption.setAttribute('disabled', 'true');
+    // } else {
+    //   incorrectItemsCountHeuristicOption.removeAttribute('disabled');
+    // }
   });
 
   handleForm(solvePuzzleFormId, (formData) => {
@@ -104,11 +106,11 @@ const main = () => {
 
     if (!initialStatePuzzle || !targetStatePuzzle)
       [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
-
+    
     stepsAssembler.setSolving(true);
 
     setTimeout(() => {
-      const [solutionSteps, priorityQueue] = solvePuzzle({
+      solvePuzzle({
         initialState: initialStatePuzzle.getState(),
         targetState: targetStatePuzzle.getState(),
         heuristicFunction,
@@ -118,10 +120,9 @@ const main = () => {
         reverseSteps,
       });
 
-      console.log({solutionSteps, priorityQueue});
       stepsAssembler.setSolving(false);
     }, 50);
-  })
+  });
 
   initialStateRandomizeButton.addEventListener('click', () => {
     if (initialStatePuzzle)
@@ -144,7 +145,7 @@ const main = () => {
   });
 }
 
-// runPuzzleTests();
+runPuzzleTests();
 runMinHeapTests();
 runPuzzleSolverTests();
 main();

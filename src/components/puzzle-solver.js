@@ -60,10 +60,10 @@ const solvePuzzle = ({
 
   while (priorityQueueSize > 0) {
 
-    if (priorityQueueSize > 500000) {
-      stepsAssembler.addMessage('Too many nodes were generated. Terminating execution 🛑');
-      return [null, null];
-    }
+    // if (priorityQueueSize > 500000) {
+    //   stepsAssembler.addMessage('Too many nodes were generated. Terminating execution 🛑');
+    //   return null;
+    // }
 
     const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
     const cursorPosition = Puzzle.getItemPosition(cursorIndex, puzzleSize);
@@ -115,7 +115,7 @@ const solvePuzzle = ({
         appendAfter: 'last-message',
       });
 
-      return [steps, priorityQueue];
+      return steps;
     }
 
     state.forEach((itemValue, itemIndex) => {
@@ -149,7 +149,7 @@ const solvePuzzle = ({
   }
 
   stepsAssembler.addMessage('Failed to find solution 😭');
-  return [null, null];
+  return null;
 };
 
 export default solvePuzzle;
