@@ -1,21 +1,24 @@
 # 8-puzzle
-
-Simple 8-puzzle solver written in JavaScript.- [8-puzzle](#8-puzzle)
+- [8-puzzle](#8-puzzle)
   - [Implementation](#implementation)
     - [Heuristic functions](#heuristic-functions)
     - [Node structure](#node-structure)
     - [Memory complexity](#memory-complexity)
+    - [Node generation](#node-generation)
     - [Time complexity](#time-complexity)
   - [Conclusion](#conclusion)
     - [Heuristic functions comparison](#heuristic-functions-comparison)
     - [Why JavaScript?](#why-javascript)
+  - [Testing](#testing)
   - [References](#references)
+
+Simple 8-puzzle solver written in JavaScript. User interface is realizes as a simple web page, where user can choose size of the puzzle (3x3, 4x4, or 5x5) and heuristic type.
 
 ## Implementation
 
 This implementation utilizes [Greedy search algorithm][2] with [min heap][3] as the priority queue and [hash map][4] data structure for the visited states.
 
-Algorithm is initialized with a single entry in the min heap and visited states map (the initial state). Then, each iteration following steps occur:
+Algorithm is initialized with a single entry in the min heap and in the visited states map (the initial state). Then, each iteration following steps occur:
 
 1. Check if queue is empty. If it is - solution has not been found, exit.
 2. Pop (extract min) value from the priority queue.
@@ -33,7 +36,7 @@ This implementation contains two heuristic functions to choose from:
 - *Manhattan Distance* - sum of distances from current position of each puzzle item to its target position. Formula for the distance calculation is: `|x2 - x1| + |y2 - y1|`, where `x1`, `y1`, `x2`, `y2` are coordinates of the puzzle item, and its target position, respectively.
 - *Invalid placed items count* - count of invalid placed items.
 
-Second options is obviously much worse, because it provides much less relevant information. This is also projected in the final testing results.
+Second options is obviously much worse, because it provides much less relevant information about the state of the puzzle. This is also projected in the final testing results.
 
 ### Node structure
 
@@ -135,11 +138,11 @@ Here are average results of duration for each heuristic with random state genera
 |-------------|------------|----------------------|------------------------------------------|
 | 3           | 250        | ~0.0041777s          | ~0.0125658s                              |
 | 4           | 125        | ~0.0576453s          | ~0.35580458                              |
-| 5           | 100        | ~0.3606378s          | Not measured due to high node generation |
+| 5           | 100        | ~0.3606378s          | ~1.7524236s                              |
 
 ## Conclusion
 
-Greedy algorithm is not an ideal solution for 8, 15, or 24 puzzles, because it utilizes single heuristic and doesn't evaluate its previous states to make better decisions. Something lie A* algorithm with good heuristic function, would produce much better results
+Greedy algorithm is not an ideal solution for 8, 15, or 24 puzzles, because it utilizes single heuristic and doesn't evaluate its previous states to make better decisions. Something like A* algorithm with good heuristic function, would produce much better results.
 
 ### Heuristic functions comparison
 
@@ -148,6 +151,10 @@ As far as the heuristic functions go, it is evident from the results that *Manha
 ### Why JavaScript?
 
 It also worth noting that JavaScript is not the fastest language out there. It's main limitation in terms of execution speed comes from the fact that it is an interpreted language. Languages such as C and C++ can solve this type of problems with higher time and memory efficiency. But JavaScript has an advantage of being sole programming language that web browsers understand. This allows to create beautiful user interfaces with HTML and CSS, and define their logic with JavaScript. Browser environment also allows to directly take memory snapshots to analyze memory consumption of the page. These are the main reasons why JavaScript was selected for this project.
+
+## Testing
+
+Several test scenarios can be found in the `puzzle-solver-tests.js` file in the `src/tests` directory of the project.
 
 ## References
 

@@ -73,17 +73,6 @@ const main = () => {
 
     puzzleWrappers.forEach(wrapper => wrapper.setAttribute('data-open', 'true'));
     solvePuzzleForm.setAttribute('data-open', 'true');
-
-    // const puzzleHeuristicSelect = solvePuzzleForm.querySelector('select[name="heuristic-type"]');
-    // const incorrectItemsCountHeuristicOption = solvePuzzleForm
-    //   .querySelector('option[value="incorrect-items-count"');
-
-    // if (puzzleSize > 4) {
-    //   puzzleHeuristicSelect.value = 'manhattan';
-    //   incorrectItemsCountHeuristicOption.setAttribute('disabled', 'true');
-    // } else {
-    //   incorrectItemsCountHeuristicOption.removeAttribute('disabled');
-    // }
   });
 
   handleForm(solvePuzzleFormId, (formData) => {
@@ -106,7 +95,7 @@ const main = () => {
 
     if (!initialStatePuzzle || !targetStatePuzzle)
       [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
-    
+
     stepsAssembler.setSolving(true);
 
     setTimeout(() => {
