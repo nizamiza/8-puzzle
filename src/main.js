@@ -73,6 +73,15 @@ const main = () => {
 
     puzzleWrappers.forEach(wrapper => wrapper.setAttribute('data-open', 'true'));
     solvePuzzleForm.setAttribute('data-open', 'true');
+
+    const incorrectItemsCountHeuristicOption = solvePuzzleForm
+      .querySelector('option[value="incorrect-items-count"');
+
+    if (puzzleSize > 4) {
+      incorrectItemsCountHeuristicOption.setAttribute('disabled', 'true');
+    } else {
+      incorrectItemsCountHeuristicOption.removeAttribute('disabled');
+    }
   });
 
   handleForm(solvePuzzleFormId, (formData) => {
@@ -116,12 +125,12 @@ const main = () => {
 
   initialStateRandomizeButton.addEventListener('click', () => {
     if (initialStatePuzzle)
-      initialStatePuzzle.setState(generateRandomState(puzzleSize));
+      initialStatePuzzle.setState(generateRandomState(puzzleSize).currentState);
   });
 
   targetStateRandomizeButton.addEventListener('click', () => {
     if (targetStatePuzzle)
-      targetStatePuzzle.setState(generateRandomState(puzzleSize));
+      targetStatePuzzle.setState(generateRandomState(puzzleSize).currentState);
   });
 
   initialStateResetButton.addEventListener('click', () => {
@@ -135,7 +144,7 @@ const main = () => {
   });
 }
 
-runPuzzleTests();
+// runPuzzleTests();
 runMinHeapTests();
 runPuzzleSolverTests();
 main();

@@ -58,7 +58,12 @@ const solvePuzzle = ({
 
   let priorityQueueSize = priorityQueue.size()
 
-  while (priorityQueueSize > 0 && priorityQueueSize < 500000) {
+  while (priorityQueueSize > 0) {
+
+    if (priorityQueueSize > 500000) {
+      stepsAssembler.addMessage('Too many nodes were generated. Terminating execution 🛑');
+      return [null, null];
+    }
 
     const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
     const cursorPosition = Puzzle.getItemPosition(cursorIndex, puzzleSize);
