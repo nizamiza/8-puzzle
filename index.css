@@ -30,7 +30,6 @@ body {
 
 main {
   display: grid;
-  justify-self: center;
   grid-template-columns: 1fr;
   place-content: center;
   place-items: center;
@@ -63,8 +62,17 @@ button {
   background-color: darkslateblue;
 }
 
+.puzzles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  gap: inherit;
+  grid-column: 1 / -1;
+}
+
 .puzzle-wrapper {
   display: grid;
+  justify-self: center;
   place-items: center;
   gap: .75rem;
   opacity: 0;
@@ -83,7 +91,7 @@ button {
 
 .form {
   display: grid;
-  max-width: 600px;
+  max-width: 400px;
   width: 100%;
   align-items: center;
   gap: 1rem;
@@ -215,6 +223,7 @@ button:hover::after,
 #solution-steps {
   display: grid;
   gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   justify-self: stretch;
   background-color: var(--translucent-black);
   grid-column: 1 / -1;
@@ -264,6 +273,7 @@ button:hover::after,
 
 .solution-step-message {
   margin: 0;
+  grid-column: 1 / -1;
 }
 
 @media (prefers-color-scheme: dark) {

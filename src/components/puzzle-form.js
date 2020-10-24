@@ -1,7 +1,3 @@
-/**
- * @param {string} formId 
- * @param {(formData: FormData) => any} onSubmit 
- */
 export const handleForm = (formId, onSubmit) => {
   const form = document.getElementById(formId);
   
@@ -13,10 +9,6 @@ export const handleForm = (formId, onSubmit) => {
   });
 };
 
-/**
- * @param {string} inputId 
- * @param {(event: InputEvent) => any} onChange 
- */
 export const handleInput = (inputId, onChange) => {
   const input = document.getElementById(inputId);
 

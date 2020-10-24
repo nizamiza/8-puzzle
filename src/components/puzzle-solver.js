@@ -1,107 +1,119 @@
-import {swapArrayElements} from '../utils.js';
 import MinHeap from './min-heap.js';
 import Puzzle from './puzzle.js';
-import SolutionStepsAssembler from './solution-steps-assembler.js';
 
 
-/** @param {number[]} state  */
 const generateStateKey = (state) => {
-  return state.reduce((hash, currentValue) => `${hash ? `${hash}-` : ''}${currentValue}`, '');
+  return state.reduce((stateKey, currentValue) => {
+    return `${stateKey ? `${stateKey}-` : ''}${currentValue}`;
+  }, '');
 };
 
-/**
- * @param {object} params
- * @param {number[]} params.initialState 
- * @param {number[]} params.targetState
- * @param {(current: number[], target: number[], size: number) => number} params.heuristicFunction
- * @param {number} params.puzzleSize
- * @param {SolutionStepsAssembler} params.solutionStepsAssembler
- * @param {boolean} params.minimizeOutput
- * @param {boolean} params.reverseSteps
- */
+const generateNewState = (state, cursorIndex, itemIndex) => {
+  let newStateKey = '';
+  let newState = [];
+
+  for (let index = 0; index < state.length; index++) {
+    if (index === cursorIndex)
+      newState[index] = state[itemIndex];
+
+    else if (index === itemIndex)
+      newState[index] = state[cursorIndex];
+
+    else
+      newState[index] = state[index];
+
+    newStateKey += `${newStateKey ? `-` : ''}${newState[index]}`;
+  }
+
+  return [newState, newStateKey];
+};
+
 const solvePuzzle = ({
   initialState,
-  targetState,
   heuristicFunction,
-  puzzleSize,
-  solutionStepsAssembler,
-  minimizeOutput,
-  reverseSteps,
+  minimizeOutput = false,
+  puzzleSize = 3,
+  reverseSteps = false,
+  stepsAssembler,
+  targetState,
 }) => {
+  stepsAssembler.clearContainer();
+
   const startTime = performance.now();
-  solutionStepsAssembler.clearContainer();
-
   const cursorIndex = initialState.indexOf(0);
-  const initialStateKey = generateStateKey(initialState);
 
-  const priorityQueue = new MinHeap((state) => state.heuristicValue, [{
-    state: initialState,
-    stateKey: initialStateKey,
-    parentStateKey: null,
-    cursorIndex,
-    cursorPosition: Puzzle.getItemPosition(cursorIndex, puzzleSize),
+  const initialStateEntry = {
+    cursorIndex: cursorIndex,
     heuristicValue: heuristicFunction(initialState, targetState, puzzleSize),
-  }]);
+    state: initialState,
+    stateKey: generateStateKey(initialState),
+  };
 
-  /** @type {Map<string, {parentKey: string, stepElement: HTMLElement}>} */
-  const visitedStates = new Map([[initialStateKey, {
+  const priorityQueue = new MinHeap(initialStateEntry, (state) => state.heuristicValue);
+
+  const visitedStates = new Map([[initialStateEntry.stateKey, {
     parentKey: null,
     stepElement: null,
   }]]);
 
-  while (priorityQueue.size() > 0) {
-    const {
-      cursorIndex,
-      cursorPosition,
-      state,
-      stateKey: parentStateKey,
-      heuristicValue,
-    } = priorityQueue.pop();
+  let priorityQueueSize = priorityQueue.size()
 
-    if (priorityQueue.size() > 500000) {
-      solutionStepsAssembler.addMessage('Too many nodes were generated. Terminating execution ⚠');
-      return null;
-    }
+  while (priorityQueueSize > 0 && priorityQueueSize < 500000) {
+
+    const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
+    const cursorPosition = Puzzle.getItemPosition(cursorIndex, puzzleSize);
 
     if (heuristicValue === 0) {
+
       const endTime = performance.now();
-      const timeElapsed = ((endTime - startTime) / 1000).toFixed(6);
+      const timeElapsed = ((endTime - startTime) / 1000).toFixed(5);
 
       const sectionDivider = '--------------------------';
 
-      solutionStepsAssembler.addMessage('Solution has been found 😊');
-      solutionStepsAssembler.addMessage(sectionDivider);
+      stepsAssembler.addMessage('Solution has been found 😊');
+      stepsAssembler.addMessage(sectionDivider);
 
-      const nodesCountMessage = solutionStepsAssembler.addMessage(
+      const nodesCountMessage = stepsAssembler.addMessage(
         `Nodes created 🧱: ${visitedStates.size}`
       );
 
-      const stepsCount = solutionStepsAssembler.assembleSteps({
+      const steps = stepsAssembler.assembleSteps({
         visitedStates,
         minimizeOutput,
         reverseSteps,
         stateKey: parentStateKey,
       });
 
-      const stepsCountMessage = solutionStepsAssembler.addMessage({
-        messageText: `Steps count 🚶‍♀️: ${stepsCount}`,
+      const stepsCountMessage = stepsAssembler.addMessage({
+        messageText: `Steps count 🚶‍♀️: ${steps.length}`,
         appendAfter: nodesCountMessage,
       });
 
-      const timeElapsedMessage = solutionStepsAssembler.addMessage({
+      const timeElapsedMessage = stepsAssembler.addMessage({
         messageText: `Time elapsed ⏰: ${timeElapsed}s`,
         appendAfter: stepsCountMessage,
       });
+      
+      if ('memory' in performance) {
+        const memory = performance.memory
+        const used = (memory.usedJSHeapSize / 1024).toFixed(2);
+        const total =  (memory.jsHeapSizeLimit / 1024).toFixed(2);
 
-      solutionStepsAssembler.addMessage({
+        stepsAssembler.addMessage({
+          messageText: `Heap memory used 💹: ${used}KB / ${total}KB`,
+          appendAfter: timeElapsedMessage,
+        })
+      }
+
+      stepsAssembler.addMessage({
         messageText: sectionDivider,
-        appendAfter: timeElapsedMessage,
+        appendAfter: 'last-message',
       });
 
-      return state;
+      return [steps, priorityQueue];
     }
 
-    state.forEach((itemValue, itemIndex, currentState) => {
+    state.forEach((itemValue, itemIndex) => {
       if (itemValue === 0)
         return;
 
@@ -111,30 +123,28 @@ const solvePuzzle = ({
       if (!itemMoveDirection)
         return;
 
-      const newState = swapArrayElements(currentState, cursorIndex, itemIndex);
-      const stateKey = generateStateKey(newState);
-      
-      if (visitedStates.get(stateKey))
+      const [newState, newStateKey] = generateNewState(state, cursorIndex, itemIndex);
+      if (visitedStates.get(newStateKey))
         return;
 
-      visitedStates.set(stateKey, {
+      visitedStates.set(newStateKey, {
         parentKey: parentStateKey,
-        stepElement: solutionStepsAssembler.createStep(itemValue, itemMoveDirection)
+        stepElement: stepsAssembler.createStep(itemValue, itemMoveDirection)
       });
 
       priorityQueue.push({
-        stateKey,
-        parentStateKey,
-        state: newState,
         cursorIndex: itemIndex,
-        cursorPosition: itemPosition,
         heuristicValue: heuristicFunction(newState, targetState, puzzleSize),
+        state: newState,
+        stateKey: newStateKey,
       });
     });
+
+    priorityQueueSize = priorityQueue.size();
   }
 
-  solutionStepsAssembler.addMessage('Failed to find solution 😭');
-  return null;
+  stepsAssembler.addMessage('Failed to find solution 😭');
+  return [null, null];
 };
 
 export default solvePuzzle;

@@ -27,25 +27,27 @@
       </datalist>
       <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
     </form>
-    <section class="puzzle-wrapper">
-      <h3>Initial state:</h3>
-      <section id="initial-state" class="puzzle"></section>
-      <button class="puzzle-randomize-button" id="initial-state-randomize-button">
-        Randomize
-      </button>
-      <button class="puzzle-reset-button" id="initial-state-reset-button">
-        Reset
-      </button>
-    </section>
-    <section class="puzzle-wrapper">
-      <h3>Target state:</h3>
-      <section id="target-state" class="puzzle"></section>
-      <button class="puzzle-randomize-button" id="target-state-randomize-button">
-        Randomize
-      </button>
-      <button class="puzzle-reset-button" id="target-state-reset-button">
-        Reset
-      </button>
+    <section class="puzzles">
+      <section class="puzzle-wrapper">
+        <h3>Initial state:</h3>
+        <section id="initial-state" class="puzzle"></section>
+        <button class="puzzle-randomize-button" id="initial-state-randomize-button">
+          Randomize
+        </button>
+        <button class="puzzle-reset-button" id="initial-state-reset-button">
+          Reset
+        </button>
+      </section>
+      <section class="puzzle-wrapper">
+        <h3>Target state:</h3>
+        <section id="target-state" class="puzzle"></section>
+        <button class="puzzle-randomize-button" id="target-state-randomize-button">
+          Randomize
+        </button>
+        <button class="puzzle-reset-button" id="target-state-reset-button">
+          Reset
+        </button>
+      </section>
     </section>
     <form class="form" id="solve-puzzle-form">
       <label for="heuristic-type">Heuristic type:</label>

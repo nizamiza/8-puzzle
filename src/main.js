@@ -1,9 +1,11 @@
 import Puzzle from './components/puzzle.js';
-import SolutionStepsAssembler from './components/solution-steps-assembler.js';
+import StepsAssembler from './components/steps-assembler.js';
 import {handleForm, handleInput} from './components/puzzle-form.js';
 import solvePuzzle from './components/puzzle-solver.js';
 import {manhattanDistance, invalidPlacedItemsCount} from './heuristics.js'
-import runTests from './tests/puzzle-tests.js';
+import runPuzzleTests from './tests/puzzle-tests.js';
+import runMinHeapTests from './tests/min-heap-tests.js';
+import runPuzzleSolverTests from './tests/puzzle-solver-tests.js';
 import {generateRandomState, range} from './utils.js';
 
 
@@ -84,7 +86,7 @@ const main = () => {
     else if (heuristicType === 'incorrect-items-count')
       heuristicFunction = invalidPlacedItemsCount;
 
-    const solutionStepsAssembler = new SolutionStepsAssembler({
+    const stepsAssembler = new StepsAssembler({
       puzzleSize,
       selectors: {
         containerId: 'solution-steps',
@@ -94,20 +96,21 @@ const main = () => {
     if (!initialStatePuzzle || !targetStatePuzzle)
       [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
 
-    solutionStepsAssembler.setSolving(true);
+    stepsAssembler.setSolving(true);
 
     setTimeout(() => {
-      solvePuzzle({
+      const [solutionSteps, priorityQueue] = solvePuzzle({
         initialState: initialStatePuzzle.getState(),
         targetState: targetStatePuzzle.getState(),
         heuristicFunction,
         puzzleSize,
-        solutionStepsAssembler,
+        stepsAssembler,
         minimizeOutput,
         reverseSteps,
       });
 
-      solutionStepsAssembler.setSolving(false);
+      console.log({solutionSteps, priorityQueue});
+      stepsAssembler.setSolving(false);
     }, 50);
   })
 
@@ -123,14 +126,16 @@ const main = () => {
 
   initialStateResetButton.addEventListener('click', () => {
     if (initialStatePuzzle)
-      initialStatePuzzle.setState([...range(1, puzzleSize * puzzleSize), 0]);
+      initialStatePuzzle.setState([...range(1, puzzleSize ** 2), 0]);
   });
 
   targetStateResetButton.addEventListener('click', () => {
     if (targetStatePuzzle)
-      targetStatePuzzle.setState([...range(1, puzzleSize * puzzleSize), 0]);
+      targetStatePuzzle.setState([...range(1, puzzleSize ** 2), 0]);
   });
 }
 
+runPuzzleTests();
+runMinHeapTests();
+runPuzzleSolverTests();
 main();
-runTests();

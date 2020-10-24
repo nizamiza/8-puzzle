@@ -1,10 +1,6 @@
 import Puzzle from './components/puzzle.js'
 
 
-/**
- * @param {number[]} currentState 
- * @param {number[]} targetState 
- */
 export const manhattanDistance = (currentState, targetState, puzzleSize) => {
 
   return currentState.reduce((heuristicValue, currentValue, currentIndex) => {
@@ -21,10 +17,7 @@ export const manhattanDistance = (currentState, targetState, puzzleSize) => {
   }, 0);
 };
 
-/**
- * @param {number[]} currentState 
- * @param {number[]} targetState 
- */
+
 export const invalidPlacedItemsCount = (currentState, targetState) => {
 
   return currentState.reduce((heuristicValue, currentValue, currentIndex) => {

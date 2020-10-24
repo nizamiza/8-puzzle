@@ -1,36 +1,12 @@
 import Puzzle from './puzzle.js';
 
 
-class SolutionStepsAssembler {
-  /**
-   * @typedef SolutionStepsAssemblerSelectors
-   * @property {string} containerId
-   * @property {string} solutionMessageClassName
-   * @property {string} stepClassName
-   * @property {string} stepItemClassName
-   * @property {string} stepIndexClassName
-   * @property {string} stepDirectionClassName
-   * @property {string} stepPuzzleWrapperClassName
-   * 
-   * @typedef SolutionStepsAssemblerParams
-   * @property {SolutionStepsAssemblerSelectors} selectors
-   * @property {number} puzzleSize
-   * @property {string} stepStateItemsSeparator
-   */
-  
-   /** @type {SolutionStepsAssemblerSelectors} */
-  _selectors;
+class StepsAssembler {
+  selectors;
+  container;
+  puzzleSize;
+  stepStateItemsSeparator;
 
-  /** @type {HTMLElement} */
-  _container;
-
-  /** @type {number} */
-  _puzzleSize;
-
-  /** @type {string} */
-  _stepStateItemsSeparator;
-
-  /** @param {SolutionStepsAssemblerParams} params */
   constructor({selectors, puzzleSize, stepStateItemsSeparator = '-'}) {
     const {containerId, stepClassName = 'solution-step'} = selectors;
     
@@ -42,7 +18,7 @@ class SolutionStepsAssembler {
       stepPuzzleWrapperClassName = `${stepClassName}-puzzle`,
     } = selectors;
 
-    this._selectors = {
+    this.selectors = {
       containerId,
       stepClassName,
       stepDirectionClassName,
@@ -52,55 +28,46 @@ class SolutionStepsAssembler {
       stepPuzzleWrapperClassName,
     };
 
-    this._container = document.getElementById(containerId);
-    this._puzzleSize = puzzleSize;
-    this._stepStateItemsSeparator = stepStateItemsSeparator;
+    this.container = document.getElementById(containerId);
+    this.puzzleSize = puzzleSize;
+    this.stepStateItemsSeparator = stepStateItemsSeparator;
   }
 
-  /** @param {boolean} isSolving */
   setSolving(isSolving) {
     if (isSolving) {
-      this._container.setAttribute('data-solving', 'true');
-      this._container.innerHTML = '';
+      this.container.setAttribute('data-solving', 'true');
+      this.container.innerHTML = '';
       this.addMessage('Solving 🧠...');
     } else {
-      this._container.removeAttribute('data-solving');
+      this.container.removeAttribute('data-solving');
     }
   }
 
-  /**
-   * @param {number} itemValue 
-   * @param {string} itemMoveDirection 
-   */
   createStep(itemValue, itemMoveDirection) {
     const container = document.createElement('div');
     const puzzleItem = document.createElement('div');
     const direction = document.createElement('span');
   
-    container.className = this._selectors.stepClassName;
-    puzzleItem.className = this._selectors.stepItemClassName;
-    direction.className = this._selectors.stepDirectionClassName;
+    container.className = this.selectors.stepClassName;
+    puzzleItem.className = this.selectors.stepItemClassName;
+    direction.className = this.selectors.stepDirectionClassName;
   
     puzzleItem.textContent = itemValue;
     direction.textContent = itemMoveDirection;
   
     container.append(puzzleItem, direction);
+    container.setAttribute('data-direction', itemMoveDirection);
+
     return container;
   }
 
-  /**
-   * @param {object} params
-   * @param {string} params.messageText
-   * @param {HTMLElement} [params.appendAfter]
-   * @param {string} [params.textAlign]
-   */
   addMessage(params) {
     const message = document.createElement('p');
-    message.className = this._selectors.solutionMessageClassName;
+    message.className = this.selectors.solutionMessageClassName;
 
     if (typeof params === 'string') {
       message.textContent = params;
-      this._container.append(message);
+      this.container.append(message);
 
       return message;
     }
@@ -111,24 +78,27 @@ class SolutionStepsAssembler {
     if (textAlign)
       message.style.textAlign = textAlign;
 
-    if (appendAfter)
+    if (!appendAfter) {
+      this.container.append(message);
+      return message;
+    }
+
+    if (typeof appendAfter === 'string' && appendAfter === 'last-message') {
+      const messages = document.getElementsByClassName(this.selectors.solutionMessageClassName);
+      const lastMessage = messages[messages.length - 1];
+
+      lastMessage.after(message);
+    } else {
       appendAfter.after(message);
-    else
-      this._container.append(message);
+    }
 
     return message;
   }
 
-  /**
-   * @param {HTMLElement} stepElement 
-   * @param {number} index
-   * @param {number} stepsCount
-   * @param {boolean} reversed
-   */
   prependIndexToStep(stepElement, index, stepsCount, reversed) {
     const stepIndex = document.createElement('span');
     
-    stepIndex.className = this._selectors.stepIndexClassName;
+    stepIndex.className = this.selectors.stepIndexClassName;
     stepIndex.textContent = reversed ? (stepsCount - index) : (index + 1);
     
     stepElement.id = this.getStepElementId(index);
@@ -137,20 +107,16 @@ class SolutionStepsAssembler {
     return stepElement;
   };
 
-  /**
-   * @param {HTMLElement} stepElement 
-   * @param {number} index
-   */
   appendPuzzleToStep(stepElement, index) {
     const stepItemValue = Number.parseInt(
-      stepElement.querySelector(`.${this._selectors.stepItemClassName}`).textContent
+      stepElement.querySelector(`.${this.selectors.stepItemClassName}`).textContent
     );
 
     const puzzleWrapperId = `${this.getStepElementId(index)}-puzzle`;
     const puzzleWrapper = document.createElement('div');
 
     puzzleWrapper.id = puzzleWrapperId;
-    puzzleWrapper.className = this._selectors.stepPuzzleWrapperClassName;
+    puzzleWrapper.className = this.selectors.stepPuzzleWrapperClassName;
 
     stepElement.appendChild(puzzleWrapper);
 
@@ -160,9 +126,9 @@ class SolutionStepsAssembler {
         containerId: puzzleWrapperId,
         cursorId: `${puzzleWrapperId}-cursor`,
       },
-      size: this._puzzleSize,
+      size: this.puzzleSize,
       state: stepElement.getAttribute('data-state')
-        .split(this._stepStateItemsSeparator)
+        .split(this.stepStateItemsSeparator)
         .map(itemValue => {
           const itemParsedValue = Number.parseInt(itemValue);
 
@@ -174,15 +140,6 @@ class SolutionStepsAssembler {
     });
   }
 
-  /**
-   * @param {object} params
-   * @param {Map<string, {parentKey: string, stepElement: HTMLElement}>} params.visitedStates 
-   * @param {string} params.stateKey
-   * @param {boolean} params.minimizeOutput
-   * @param {boolean} params.reverseSteps
-   * 
-   * @returns {number} Solutions steps count.
-   */
   assembleSteps({visitedStates, stateKey, minimizeOutput, reverseSteps}) {
     const getSolutionSteps = (stateKey, steps = []) => {
       const {stepElement, parentKey} = visitedStates.get(stateKey);
@@ -204,22 +161,21 @@ class SolutionStepsAssembler {
       return this.prependIndexToStep(stepElement, index, steps.length, reverseSteps);
     });
 
-    this._container.append(...indexedSteps);
+    this.container.append(...indexedSteps);
 
     if (!minimizeOutput)
       indexedSteps.map(this.appendPuzzleToStep, this);
 
-    return steps.length;
+    return steps;
   }
 
-  /** @param {number} index */
   getStepElementId(index) {
-    return `${this._selectors.stepClassName}-${index}`;
+    return `${this.selectors.stepClassName}-${index}`;
   }
 
   clearContainer() {
-    this._container.innerHTML = '';
+    this.container.innerHTML = '';
   }
 }
 
-export default SolutionStepsAssembler;
+export default StepsAssembler;

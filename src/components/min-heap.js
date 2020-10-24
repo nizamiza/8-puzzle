@@ -1,36 +1,25 @@
 /**
  * Based on work by © Marijn Haverbeke, 2007
  * @see https://eloquentjavascript.net/1st_edition/appendix2.html
- * 
- * @template T
  */
 class MinHeap {
-  /** @type {T[]} */
   elements;
-
-  /** @type {(element: T) => number} */
   getPriority;
 
-  /**
-   * @param {T[]} initialValues
-   * @param {(heapElement: T) => number} getPriority
-   */
-  constructor(getPriority, initialValues) {
-    this.elements = initialValues;
+  constructor(initialValue, getPriority = (element) => element) {
+    this.elements = initialValue ? [initialValue] : [];
     this.getPriority = getPriority;
   }
   
-  /**
-   * @param {number} indexA 
-   * @param {number} indexB 
-   */
-  _swapElements(indexA, indexB) {
-    return [this.elements[indexA], this.elements[indexB]] = [this.elements[indexB], this.elements[indexA]]
+  swapElements(indexA, indexB) {
+    return [this.elements[indexA], this.elements[indexB]] = [
+      this.elements[indexB],
+      this.elements[indexA]
+    ]
   }
 
-  /** @param {number} index */
-  _orderElementsFromBottom(index = 0) {
-    let currentIndex = index;
+  bottomHeapify() {
+    let currentIndex = this.size() - 1;
 
     const element = this.elements[currentIndex];
     const priority = this.getPriority(element);
@@ -43,48 +32,47 @@ class MinHeap {
       if (priority >= this.getPriority(parentElement))
         break;
 
-      this._swapElements(currentIndex, parentIndex);
+      this.swapElements(currentIndex, parentIndex);
       currentIndex = parentIndex;
     }
   }
 
-  /** @param {number} index */
-  _orderElementsFromTop(index = 0) {
-    let currentIndex = index;
-    
-    const elementsCount = this.elements.length;
+  topHeapify() {
+    let currentIndex = 0;
 
     const element = this.elements[currentIndex];
     const priority = this.getPriority(element);
 
+    const elementsCount = this.size();
+
     while (true) {
-      let rightChildIndex = (currentIndex + 1) * 2;
-      let leftChildIndex = rightChildIndex - 1;
+
+      let leftChildIndex = (currentIndex * 2) + 1;
+      let rightChildIndex = (currentIndex * 2) + 2;
+
+      let leftChildPriority;
+      let rightChildPriority;
 
       let swapIndex;
-      let leftChildPriority;
 
       if (leftChildIndex < elementsCount) {
-
-        const leftChild = this.elements[leftChildIndex];
-        leftChildPriority = this.getPriority(leftChild);
+        leftChildPriority = this.getPriority(this.elements[leftChildIndex]);
 
         if (leftChildPriority < priority)
           swapIndex = leftChildIndex;
       }
 
       if (rightChildIndex < elementsCount) {
-        const rightChild = this.elements[rightChildIndex];
-        const rightChildPriority = this.getPriority(rightChild);
-        
-        if (rightChildPriority < (!swapIndex ? priority : leftChildPriority))
+        rightChildPriority =  this.getPriority(this.elements[rightChildIndex]);
+              
+        if (rightChildPriority < (swapIndex ? leftChildPriority : priority))
           swapIndex = rightChildIndex;
       }
 
       if (!swapIndex)
         break;
 
-      this._swapElements(currentIndex, swapIndex);
+      this.swapElements(currentIndex, swapIndex);
       currentIndex = swapIndex;
     }
   }
@@ -95,16 +83,15 @@ class MinHeap {
 
     if (this.elements.length > 0) {
       this.elements[0] = lastElement;
-      this._orderElementsFromTop();
+      this.topHeapify();
     }
 
     return poppedElement;
   }
 
-  /** @param {T} element */
   push(element) {
     this.elements.push(element);
-    this._orderElementsFromBottom(this.elements.length - 1);
+    this.bottomHeapify();
   }
 
   size() {

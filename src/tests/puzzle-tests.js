@@ -2,10 +2,6 @@ import Puzzle from '../components/puzzle.js';
 import {range, generateRandomState} from '../utils.js';
 
 
-/**
- * @param {number[]} state 
- * @param {number} puzzleSize 
- */
 export const getPuzzleItemPositionTest = (state, puzzleSize) => {
   return state.reduce(({testPassed, passedTestsCount}, currentItem, currentIndex) => {
     const { col, row } = Puzzle.getItemPosition(currentIndex, puzzleSize);
@@ -28,13 +24,18 @@ export const getPuzzleItemPositionTest = (state, puzzleSize) => {
 
     return {
       testPassed: currentTestPassed,
-      passedTestsCount: passedTestsCount + 1,
+      passedTestsCount: currentTestPassed ? passedTestsCount + 1 : passedTestsCount,
     };
   }, {
     testPassed: true,
     passedTestsCount: 0,
   });
 };
+
+
+export const puzzleStateTest = (state, puzzleSize) => {
+
+}
 
 
 const runTests = (runsCount = 5) => {
