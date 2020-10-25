@@ -141,24 +141,36 @@ class StepsAssembler {
   }
 
   assembleSteps({visitedStates, stateKey, minimizeOutput, reverseSteps}) {
-    const getSolutionSteps = (stateKey, steps = []) => {
+    const getSolutionSteps = (stateKey, stepElements = [], steps = []) => {
       const {stepElement, parentKey} = visitedStates.get(stateKey);
 
-      if (stepElement)
-        steps.push(stepElement);
+      if (stepElement) {
+        stepElements.push(stepElement);
+        const item = stepElement.querySelector(`.${this.selectors.stepItemClassName}`);
+
+        steps.push({
+          direction: stepElement.getAttribute('data-direction'),
+          itemValue: Number.parseInt(item.textContent),
+        });
+      }
 
       if (parentKey) {
         stepElement.setAttribute('data-state', stateKey);
-        getSolutionSteps(parentKey, steps);
+        getSolutionSteps(parentKey, stepElements, steps);
       }
 
-      return steps;
+      return [stepElements, steps];
     };
 
-    const steps = reverseSteps ? getSolutionSteps(stateKey) : getSolutionSteps(stateKey).reverse();
+    const [stepElements, steps] = getSolutionSteps(stateKey);
 
-    const indexedSteps = steps.map((stepElement, index) => {
-      return this.prependIndexToStep(stepElement, index, steps.length, reverseSteps);
+    if (!reverseSteps) {
+      stepElements.reverse();
+      steps.reverse();
+    }
+
+    const indexedSteps = stepElements.map((stepElement, index) => {
+      return this.prependIndexToStep(stepElement, index, stepElements.length, reverseSteps);
     });
 
     this.container.append(...indexedSteps);

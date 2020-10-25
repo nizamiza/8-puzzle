@@ -58,17 +58,17 @@ Each puzzle state stored in the priority queue is represented as an object with 
 
 Since, exact size of each data type in JavaScript is dependent on the engine and its specific implementation, we can only approximate size of each node based on the representative size of each primitive data type. So in our case, each node, which holds puzzle state, may approximately have these sizes for each of its fields:
 
-| Field Name       | Data type  | Size in bytes       |
-|------------------|------------|---------------------|
-| `state`          | `number[]` | 8 * ***N***^2       |
-| `stateKey`       | `string`   | 2 * ***N***^2 - 1   |
-| `cursorIndex`    | `number`   | 8                   |
-| `heuristicValue` | `number`   | 8                   |
-| Total            |            | 10 * ***N***^2 + 15 |
+| Field Name       | Data type  | Size in bytes               |
+|------------------|------------|-----------------------------|
+| `state`          | `number[]` | 8 * ***N*** * ***M***       |
+| `stateKey`       | `string`   | 2 * ***N*** * ***M*** - 1   |
+| `cursorIndex`    | `number`   | 8                           |
+| `heuristicValue` | `number`   | 8                           |
+| Total            |            | 10 * ***N*** * ***M*** + 15 |
 
 > Primitive data structure sizes were taken from the [MDN page][1].
 
-Where ***N*** is the size of the puzzle.
+Where ***N*** and ***M*** are the dimensions of the puzzle.
 
 So node of the classical *8 puzzle* would approximately have the size of **105 bytes**.
 
@@ -76,9 +76,9 @@ To provide specific numbers, below are data from snapshots taken in Edge (Chromi
 
 | Puzzle Size | Shallow Size (bytes) | Retained Size (bytes) |
 |-------------|----------------------|-----------------------|
-| 3           | 28                   | 120                   |
-| 4           | 28                   | 120                   |
-| 5           | 28                   | 120                   |
+| 3x3         | 28                   | 120                   |
+| 4x4         | 28                   | 120                   |
+| 5x5         | 28                   | 120                   |
 
 > Yes, they are the same. This has been tested multiple times, but same results were received.
 
@@ -94,41 +94,41 @@ Here are some results of node generation for the given amount of steps.
 
 | Puzzle Size | Steps count | Nodes count |
 |-------------|-------------|-------------|
-| 3           | 4           | 12          |
-| 3           | 36          | 82          |
-| 3           | 39          | 208         |
-| 3           | 81          | 763         |
-| 3           | 93          | 479         |
-| 4           | 81          | 616         |
-| 4           | 162         | 2913        |
-| 4           | 171         | 2367        |
-| 4           | 195         | 3334        |
-| 4           | 247         | 3724        |
-| 5           | 317         | 15359       |
-| 5           | 430         | 35238       |
-| 5           | 444         | 13747       |
-| 5           | 519         | 22754       |
-| 5           | 542         | 122182      |
+| 3x3         | 4           | 12          |
+| 3x3         | 36          | 82          |
+| 3x3         | 39          | 208         |
+| 3x3         | 81          | 763         |
+| 3x3         | 93          | 479         |
+| 4x4         | 81          | 616         |
+| 4x4         | 162         | 2913        |
+| 4x4         | 171         | 2367        |
+| 4x4         | 195         | 3334        |
+| 4x4         | 247         | 3724        |
+| 5x5         | 317         | 15359       |
+| 5x5         | 430         | 35238       |
+| 5x5         | 444         | 13747       |
+| 5x5         | 519         | 22754       |
+| 5x5         | 542         | 122182      |
 
 **With Invalid placed items count heuristic**:
 
 | Puzzle Size | Steps count | Nodes count |
 |-------------|-------------|-------------|
-| 3           | 4           | 12          |
-| 3           | 48          | 621         |
-| 3           | 72          | 727         |
-| 3           | 76          | 941         |
-| 3           | 95          | 909         |
-| 4           | 245         | 21507       |
-| 4           | 307         | 30847       |
-| 4           | 361         | 21006       |
-| 4           | 466         | 39759       |
-| 4           | 529         | 82370       |
-| 5           | 504         | 108010      |
-| 5           | 561         | 255612      |
-| 5           | 579         | 62502       |
-| 5           | 708         | 289949      |
-| 5           | 716         | 206154      |
+| 3x3         | 4           | 12          |
+| 3x3         | 48          | 621         |
+| 3x3         | 72          | 727         |
+| 3x3         | 76          | 941         |
+| 3x3         | 95          | 909         |
+| 4x4         | 245         | 21507       |
+| 4x4         | 307         | 30847       |
+| 4x4         | 361         | 21006       |
+| 4x4         | 466         | 39759       |
+| 4x4         | 529         | 82370       |
+| 5x5         | 504         | 108010      |
+| 5x5         | 561         | 255612      |
+| 5x5         | 579         | 62502       |
+| 5x5         | 708         | 289949      |
+| 5x5         | 716         | 206154      |
 
 ### Time complexity
 

@@ -25,7 +25,7 @@ const puzzleSolverTest = ({
     }),
   });
 
-  const directions = steps.map(step => step.getAttribute('data-direction'));
+  const directions = steps.map(step => step.direction);
 
   directions.forEach((direction, index) => {
     if (direction !== correctDirections[index]) {

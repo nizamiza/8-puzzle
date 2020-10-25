@@ -1,4 +1,4 @@
-import {range} from '../utils.js';
+import {generateRandomState, range} from '../utils.js';
 
 class Puzzle {
   container;
@@ -31,7 +31,7 @@ class Puzzle {
     this.cursorColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--puzzle-cursor-color') || 'purple';
 
-    this.size = size;
+    this.size = typeof size === 'number' ? {cols: size, rows: size} : size;
     this.items = [];
 
     this.itemsPositions = [];
@@ -50,11 +50,13 @@ class Puzzle {
     const {col: cursorCol, row: cursorRow} = this.cursorPosition;
     const state = [];
 
-    state[cursorCol + cursorRow * this.size] = 0;
+    state[cursorCol + cursorRow * this.size.cols] = 0;
+
+    console.log(cursorCol + cursorRow * this.size.cols);
 
     this.items.forEach((item, index) => {
       const { col, row } = this.itemsPositions[index];
-      state[col + row * this.size] = Number.parseInt(item.textContent);
+      state[col + row * this.size.cols] = Number.parseInt(item.textContent);
     });
 
     return state;
@@ -101,7 +103,7 @@ class Puzzle {
       this.cursor.style.backgroundColor = this.cellHighlightedColor;
   }
 
-  handleDragLeave(event) {  
+  handleDragLeave(event) {
     if (this.dragEventTargetIsCursor(event))
       this.cursor.style.backgroundColor = this.cursorColor;
   }
@@ -116,11 +118,11 @@ class Puzzle {
     const itemPosition = this.itemsPositions[itemIndex];
 
     Puzzle.setItemGridPosition(this.selectedItem, this.cursorPosition);
-    Puzzle.setItemGridPosition(this.cursor, this.itemsPositions[itemIndex]);
+    Puzzle.setItemGridPosition(this.cursor, itemPosition);
 
     this.cursor.style.backgroundColor = this.cursorColor;
-    [this.itemsPositions[itemIndex], this.cursorPosition] = [this.cursorPosition, itemPosition];
 
+    [this.itemsPositions[itemIndex], this.cursorPosition] = [this.cursorPosition, itemPosition];
     this.setAvailableItems();
   }
 
@@ -168,13 +170,15 @@ class Puzzle {
     if (clearContainer)
       this.container.innerHTML = '';
 
-    this.container.style.setProperty('--size', this.size);
+    document.documentElement.style.setProperty('--puzzle-cols', this.size.cols);
+    document.documentElement.style.setProperty('--puzzle-rows', this.size.rows);
+
     this.cursor = document.createElement('div');
 
     this.cursor.id = this.selectors.cursorId;
     this.cursor.className = this.selectors.cursorClassName;
 
-    range(1, this.size ** 2).forEach((itemValue, index) => {
+    range(1, this.size.cols * this.size.rows).forEach((itemValue, index) => {
       const item = document.createElement('div');
 
       item.className = this.selectors.itemClassName;
@@ -189,11 +193,19 @@ class Puzzle {
     this.container.appendChild(this.cursor);
     
     this.cursorPosition = {
-      col: this.size - 1,
-      row: this.size - 1,
+      col: this.size.cols - 1,
+      row: this.size.rows - 1,
     };
-
+  
     this.setAvailableItems();
+  }
+
+  setRandomState() {
+    this.setState(generateRandomState(this.size));
+  }
+
+  resetState() {
+    this.setState([...range(1, this.size.cols * this.size.rows), 0]);
   }
 
   static setItemGridPosition(item, position) {
@@ -219,9 +231,14 @@ class Puzzle {
   };
 
   static getItemPosition(itemIndex, puzzleSize) {
+    const {cols} = typeof puzzleSize === 'number' ? {
+      cols: puzzleSize,
+      rows: puzzleSize,
+    } : puzzleSize;
+    
     return {
-      col: itemIndex % puzzleSize,
-      row: Math.floor(itemIndex / puzzleSize),
+      col: itemIndex % cols,
+      row: Math.floor(itemIndex / cols),
     };
   }
 }

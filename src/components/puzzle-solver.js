@@ -1,3 +1,4 @@
+import { millisecondsToSeconds } from '../utils.js';
 import MinHeap from './min-heap.js';
 import Puzzle from './puzzle.js';
 
@@ -37,6 +38,7 @@ const solvePuzzle = ({
   stepsAssembler,
   targetState,
 }) => {
+  console.log(initialState);
   stepsAssembler.clearContainer();
 
   const startTime = performance.now();
@@ -60,10 +62,10 @@ const solvePuzzle = ({
 
   while (priorityQueueSize > 0) {
 
-    // if (priorityQueueSize > 500000) {
-    //   stepsAssembler.addMessage('Too many nodes were generated. Terminating execution 🛑');
-    //   return null;
-    // }
+    if (millisecondsToSeconds(performance.now() - startTime) > 15) {
+      stepsAssembler.addMessage('Execution took too much time ⏳. Failed to find Solution 😔');
+      return null;
+    }
 
     const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
     const cursorPosition = Puzzle.getItemPosition(cursorIndex, puzzleSize);
@@ -71,7 +73,7 @@ const solvePuzzle = ({
     if (heuristicValue === 0) {
 
       const endTime = performance.now();
-      const timeElapsed = ((endTime - startTime) / 1000).toFixed(5);
+      const timeElapsed = millisecondsToSeconds(endTime - startTime, 5);
 
       const sectionDivider = '--------------------------';
 

@@ -6,7 +6,6 @@ import {manhattanDistance, invalidPlacedItemsCount} from './heuristics.js'
 import runPuzzleTests from './tests/puzzle-tests.js';
 import runMinHeapTests from './tests/min-heap-tests.js';
 import runPuzzleSolverTests from './tests/puzzle-solver-tests.js';
-import {generateRandomState, range} from './utils.js';
 
 
 const createPuzzles = (puzzleSize) => {
@@ -27,41 +26,46 @@ const createPuzzles = (puzzleSize) => {
       size: puzzleSize,
     }),
   ];
-}
+};
 
 const main = () => {
   const solvePuzzleFormId = 'solve-puzzle-form';
   const solvePuzzleForm = document.getElementById(solvePuzzleFormId);
-
   const puzzleWrappers = document.querySelectorAll('.puzzle-wrapper');
-
-  const puzzleSizeInputId = 'puzzle-size';
-  const puzzleSizeLabel = document.querySelector(`label[for="${puzzleSizeInputId}"]`);
-
-  const initialStateRandomizeButton = document.getElementById('initial-state-randomize-button');
-  const targetStateRandomizeButton = document.getElementById('target-state-randomize-button');
-
-  const initialStateResetButton = document.getElementById('initial-state-reset-button');
-  const targetStateResetButton = document.getElementById('target-state-reset-button');
-
-  if (puzzleSizeLabel) {
-    puzzleSizeLabel.textContent = puzzleSizeLabel?.textContent.replace(
-      /\d+/,
-      document.getElementById(puzzleSizeInputId).value
-    );
-
-    handleInput(puzzleSizeInputId, (event) => {
-      puzzleSizeLabel.textContent = puzzleSizeLabel.textContent.replace(/\d+/, event.target.value);
-    });
-  }
 
   let initialStatePuzzle;
   let targetStatePuzzle;
   let heuristicFunction;
-  let puzzleSize = 3;
+
+  let puzzleSize = {
+    cols: 3,
+    rows: 3,
+  };
+
+  const setPuzzleSizeInputChangeHandler = (dimension) => {
+    const inputId = `puzzle-size-${dimension}s`;
+    const label = document.querySelector(`label[for="${inputId}"]`);
+
+    const setLabelText = (value) => {
+      label.textContent = `Puzzle ${dimension}s (current = ${value}):`
+    };
+
+    const currentValue = puzzleSize[`${dimension}s`];
+
+    handleInput(inputId, (event) => setLabelText(event.target.value));
+
+    document.getElementById(inputId).value = currentValue;
+    setLabelText(currentValue);
+  }
+
+  setPuzzleSizeInputChangeHandler('col');
+  setPuzzleSizeInputChangeHandler('row');
   
   handleForm('puzzle-form', (formData) => {
-    puzzleSize = Number.parseInt(formData.get('puzzle-size'));
+    puzzleSize = {
+      cols: Number.parseInt(formData.get('puzzle-size-cols')),
+      rows: Number.parseInt(formData.get('puzzle-size-rows')),
+    }
 
     if (initialStatePuzzle)
       initialStatePuzzle.removeEventListeners();
@@ -113,24 +117,20 @@ const main = () => {
     }, 50);
   });
 
-  initialStateRandomizeButton.addEventListener('click', () => {
-    if (initialStatePuzzle)
-      initialStatePuzzle.setState(generateRandomState(puzzleSize).currentState);
+  document.getElementById('initial-state-randomize-button').addEventListener('click', () => {
+    initialStatePuzzle?.setRandomState();
   });
 
-  targetStateRandomizeButton.addEventListener('click', () => {
-    if (targetStatePuzzle)
-      targetStatePuzzle.setState(generateRandomState(puzzleSize).currentState);
+  document.getElementById('target-state-randomize-button').addEventListener('click', () => {
+    targetStatePuzzle?.setRandomState();
   });
 
-  initialStateResetButton.addEventListener('click', () => {
-    if (initialStatePuzzle)
-      initialStatePuzzle.setState([...range(1, puzzleSize ** 2), 0]);
+  document.getElementById('initial-state-reset-button').addEventListener('click', () => {
+    initialStatePuzzle?.resetState();
   });
 
-  targetStateResetButton.addEventListener('click', () => {
-    if (targetStatePuzzle)
-      targetStatePuzzle.setState([...range(1, puzzleSize ** 2), 0]);
+  document.getElementById('target-state-reset-button').addEventListener('click', () => {
+    targetStatePuzzle?.resetState();
   });
 }
 

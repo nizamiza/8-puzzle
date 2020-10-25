@@ -10,20 +10,19 @@
 <body>
   <main>
     <form class="form" id="puzzle-form">
-      <label for="puzzle-size">Puzzle size (current = 3):</label>
-      <input
-        type="range"
-        id="puzzle-size"
-        name="puzzle-size"
-        list="puzzle-sizes"
-        min="3"
-        max="5"
-        value="3"
-      >
+      <label for="puzzle-size-cols">Puzzle columns:</label>
+      <input type="range" id="puzzle-size-cols" name="puzzle-size-cols" value="3" min="3" max="10" list="puzzle-sizes">
+      <label for="puzzle-size-rows">Puzzle rows:</label>
+      <input type="range" id="puzzle-size-rows" name="puzzle-size-rows" value="3" min="3" max="10" list="puzzle-sizes">
       <datalist id="puzzle-sizes">
         <option value="3" label="3"></option>
         <option value="4" label="4"></option>
         <option value="5" label="5"></option>
+        <option value="6" label="6"></option>
+        <option value="7" label="7"></option>
+        <option value="8" label="8"></option>
+        <option value="9" label="9"></option>
+        <option value="10" label="10"></option>
       </datalist>
       <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
     </form>
@@ -64,7 +63,7 @@
         <input type="checkbox" id="minimized-output" name="minimized-output">
         Minimize output
       </label>
-      <label for="minimized-output">
+      <label for="reversed-steps">
         <input type="checkbox" id="reversed-steps" name="reversed-steps">
         Reverse steps
       </label>
