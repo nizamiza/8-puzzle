@@ -12,17 +12,19 @@ const puzzleSolverTest = ({
 }) => {
   let testsPassed = true;
   
+  const stepsAssembler = new StepsAssembler({
+    puzzleSize,
+    selectors: {
+      containerId: 'solution-steps',
+    },
+  });
+  
   const steps = solvePuzzle({
     initialState,
     targetState,
     heuristicFunction,
     puzzleSize,
-    stepsAssembler: new StepsAssembler({
-      puzzleSize,
-      selectors: {
-        containerId: 'solution-steps',
-      },
-    }),
+    stepsAssembler,
   });
 
   const directions = steps.map(step => step.direction);
@@ -38,6 +40,7 @@ const puzzleSolverTest = ({
     }
   });
 
+  stepsAssembler.clearContainer();
   return testsPassed;
 };
 
