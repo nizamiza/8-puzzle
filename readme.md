@@ -1,5 +1,6 @@
 # 8-puzzle
 - [8-puzzle](#8-puzzle)
+  - [Usage](#usage)
   - [Implementation](#implementation)
     - [Heuristic functions](#heuristic-functions)
     - [Node structure](#node-structure)
@@ -14,6 +15,12 @@
 
 Simple 8-puzzle solver written in JavaScript. User interface is realizes as a simple web page, where user can choose size of the puzzle (3x3, 4x4, or 5x5) and heuristic type.
 
+## Usage
+
+Interface of the program is a simple web page. To start it, open the `index.html` file in your browser.
+
+Since solution for a puzzle may contain over hundred of steps, it is recommended to use chromium based browsers, because they implement [`content-visibility` CSS attribute][5] that improves rendering of large web pages.
+
 ## Implementation
 
 This implementation utilizes [Greedy search algorithm][2] with [min heap][3] as the priority queue and [hash map][4] data structure for the visited states.
@@ -23,7 +30,7 @@ Algorithm is initialized with a single entry in the min heap and in the visited 
 1. Check if queue is empty. If it is - solution has not been found, exit.
 2. Pop (extract min) value from the priority queue.
 3. Check if its heuristic value is 0. If it is - solution has been found, exit.
-4. For each puzzle cell, check if it can be moved. If yes:
+4. For each puzzle cell, that is around the *empty space*, check if it can be moved. If yes:
    - move it;
    - generate new state;
    - calculate its heuristic value;
@@ -163,9 +170,11 @@ Several test scenarios can be found in the `puzzle-solver-tests.js` file in the 
 [2]: https://en.wikipedia.org/wiki/Greedy_algorithm
 [3]: cs.cmu.edu/~tcortina/15-121sp10/Unit06B.pdf
 [4]: https://en.wikipedia.org/wiki/Hash_table
+[5]: https://web.dev/content-visibility/
 
 * [V8 JavaScript Engine, v8.dev][0]
 * [JavaScript Data Structures, Mozilla Developer Network][1]
 * [Greedy algorithm, Wikipedia][2]
 * [Heap, Carnegie Mellon University][3]
 * [Hash table, Wikipedia][4]
+* [`content-visibility`, web.dev][5]

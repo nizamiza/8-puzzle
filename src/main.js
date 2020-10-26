@@ -170,7 +170,7 @@ const main = () => {
       });
 
       stepsAssembler.setSolving(false);
-    }, 50);
+    }, 0);
   });
 
   document.getElementById('initial-state-randomize-button').addEventListener('click', () => {
