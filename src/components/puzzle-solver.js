@@ -172,7 +172,7 @@ const solvePuzzle = ({
   if (stepsAssembler)
     stepsAssembler.addMessage('Failed to find solution 😭');
 
-  return {steps: null, timeElapsed: null};
+  return {steps: null, stats: null};
 };
 
 export default solvePuzzle;
