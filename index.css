@@ -9,7 +9,7 @@
   --puzzle-item-size: 2.25rem;
 
   --color-light: #efefef;
-  --background-color: white;
+  --background-color: #ffffff;
   --foreground-color: #202124;
   --cell-color: #0765a3;
   --cell-highlighted-color: #118847;
@@ -121,7 +121,7 @@ input {
   background-color: var(--background-color);
   padding: .45em 1em;
   border: 0;
-  border-bottom: 1px solid grey;
+  border-bottom: 2px solid var(--foreground-color);
   border-radius: var(--border-radius);
   font-size: inherit;
 }

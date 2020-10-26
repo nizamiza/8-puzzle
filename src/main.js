@@ -90,8 +90,10 @@ const main = () => {
   const setPagePuzzleSizeInfo = () => {
     const size = (puzzleSize.cols * puzzleSize.rows) - 1;
 
-    const bgColor = document.documentElement.style.getPropertyValue('--background-color');
-    const fgColor = document.documentElement.style.getPropertyValue('--foreground-color');
+    const bgColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--background-color').replace(/[\s#]/g, '');
+    const fgColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--foreground-color').replace(/[\s#]/g, '');;
 
     titlePuzzleSize.textContent = size;
 
