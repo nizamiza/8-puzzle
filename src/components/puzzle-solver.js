@@ -9,15 +9,15 @@ const generateStateKey = (state) => {
   }, '');
 };
 
-const generateNewState = (state, cursorIndex, itemIndex) => {
+const generateNewState = (state, cursorIndex, cellIndex) => {
   let newStateKey = '';
   let newState = [];
 
   for (let index = 0; index < state.length; index++) {
     if (index === cursorIndex)
-      newState[index] = state[itemIndex];
+      newState[index] = state[cellIndex];
 
-    else if (index === itemIndex)
+    else if (index === cellIndex)
       newState[index] = state[cursorIndex];
 
     else
@@ -33,7 +33,7 @@ const solvePuzzle = ({
   initialState,
   heuristicFunction,
   minimizeOutput = false,
-  puzzleSize = 3,
+  puzzleSize,
   reverseSteps = false,
   stepsAssembler,
   targetState,
@@ -41,11 +41,13 @@ const solvePuzzle = ({
   stepsAssembler.clearContainer();
 
   const startTime = performance.now();
+  
+  const size = typeof puzzleSize === 'number' ? {cols: puzzleSize, rows: puzzleSize} : puzzleSize;
   const cursorIndex = initialState.indexOf(0);
 
   const initialStateEntry = {
     cursorIndex: cursorIndex,
-    heuristicValue: heuristicFunction(initialState, targetState, puzzleSize),
+    heuristicValue: heuristicFunction(initialState, targetState, size),
     state: initialState,
     stateKey: generateStateKey(initialState),
   };
@@ -57,9 +59,7 @@ const solvePuzzle = ({
     stepElement: null,
   }]]);
 
-  let priorityQueueSize = priorityQueue.size()
-
-  while (priorityQueueSize > 0) {
+  while (priorityQueue.size() > 0) {
 
     if (millisecondsToSeconds(performance.now() - startTime) > 15) {
       stepsAssembler.addMessage('Execution took too much time ⏳. Failed to find Solution 😔');
@@ -67,7 +67,6 @@ const solvePuzzle = ({
     }
 
     const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
-    const cursorPosition = Puzzle.getItemPosition(cursorIndex, puzzleSize);
 
     if (heuristicValue === 0) {
 
@@ -119,34 +118,44 @@ const solvePuzzle = ({
       return steps;
     }
 
-    state.forEach((itemValue, itemIndex) => {
-      if (itemValue === 0)
+    const cursorPosition = Puzzle.getCellPosition(cursorIndex, size);
+    const {col: cursorCol, row: cursorRow} = cursorPosition;
+
+    const possibleIndices = [
+      (cursorCol + 1) + cursorRow * size.cols,
+      (cursorCol - 1) + cursorRow * size.cols,
+      cursorCol + (cursorRow + 1) * size.cols,
+      cursorCol + (cursorRow - 1) * size.cols,
+    ];
+
+    possibleIndices.forEach(index => {
+      const value = state[index];
+
+      if (!value) return;
+
+      const position = Puzzle.getCellPosition(index, size);
+      const moveDirection = Puzzle.getCellMoveDirection(cursorPosition, position);
+
+      if (!moveDirection)
         return;
 
-      const itemPosition = Puzzle.getItemPosition(itemIndex, puzzleSize);
-      const itemMoveDirection = Puzzle.getItemMoveDirection(cursorPosition, itemPosition);
+      const [newState, newStateKey] = generateNewState(state, cursorIndex, index);
 
-      if (!itemMoveDirection)
-        return;
-
-      const [newState, newStateKey] = generateNewState(state, cursorIndex, itemIndex);
       if (visitedStates.get(newStateKey))
         return;
 
       visitedStates.set(newStateKey, {
         parentKey: parentStateKey,
-        stepElement: stepsAssembler.createStep(itemValue, itemMoveDirection)
+        stepElement: stepsAssembler.createStep(value, moveDirection)
       });
 
       priorityQueue.push({
-        cursorIndex: itemIndex,
-        heuristicValue: heuristicFunction(newState, targetState, puzzleSize),
+        cursorIndex: index,
+        heuristicValue: heuristicFunction(newState, targetState, size),
         state: newState,
         stateKey: newStateKey,
       });
     });
-
-    priorityQueueSize = priorityQueue.size();
   }
 
   stepsAssembler.addMessage('Failed to find solution 😭');

@@ -6,7 +6,7 @@
 :root {
   --puzzle-cols: 3;
   --puzzle-rows: 3;
-  --puzzle-item-size: 2.25rem;
+  --puzzle-cell-size: 2.25rem;
 
   --color-light: #efefef;
   --background-color: #ffffff;
@@ -174,10 +174,10 @@ select {
 .solution-step-puzzle,
 .puzzle {
   display: grid;
-  grid-template-columns: repeat(var(--puzzle-cols), var(--puzzle-item-size));
-  grid-template-rows: repeat(var(--puzzle-rows), var(--puzzle-item-size));
+  grid-template-columns: repeat(var(--puzzle-cols), var(--puzzle-cell-size));
+  grid-template-rows: repeat(var(--puzzle-rows), var(--puzzle-cell-size));
   place-items: center;
-  gap: calc(var(--puzzle-item-size) / 4);
+  gap: calc(var(--puzzle-cell-size) / 4);
   margin: 1rem 0;
 }
 
@@ -190,15 +190,15 @@ select {
   background-color: var(--translucent-black);
 }
 
-.solution-step-item,
-.puzzle-item,
+.solution-step-cell,
+.puzzle-cell,
 .puzzle-cursor {
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: var(--border-radius);
-  width: var(--puzzle-item-size);
-  height: var(--puzzle-item-size);
+  width: var(--puzzle-cell-size);
+  height: var(--puzzle-cell-size);
   font-weight: bold;
   background-color: var(--cell-color);
   color: var(--color-light);
@@ -208,16 +208,16 @@ select {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.puzzle-item[draggable] {
+.puzzle-cell[draggable] {
   cursor: grab;
 }
 
-.puzzle-item[draggable]:hover {
+.puzzle-cell[draggable]:hover {
   background-color: var(--cell-highlighted-color);
 }
 
 button::after,
-.puzzle-item::after,
+.puzzle-cell::after,
 .puzzle-cursor::after {
   content: '';
   position: absolute;
@@ -230,7 +230,7 @@ button::after,
 }
 
 button:hover::after,
-.puzzle-item:hover::after,
+.puzzle-cell:hover::after,
 .puzzle-cursor:hover::after {
   top: -50%;
   left: -50%;
@@ -267,7 +267,7 @@ button:hover::after,
   gap: 1rem;
   grid-template-columns:
     repeat(auto-fit, minmax(calc(
-      var(--puzzle-item-size) * var(--puzzle-cols) + var(--puzzle-cols) * 2em
+      var(--puzzle-cell-size) * var(--puzzle-cols) + var(--puzzle-cols) * 2em
     ), 1fr));
   justify-self: stretch;
   background-color: var(--translucent-black);
@@ -290,7 +290,7 @@ button:hover::after,
 
 .solution-step {
   display: grid;
-  grid-template-columns: 1fr var(--puzzle-item-size) 1fr;
+  grid-template-columns: 1fr var(--puzzle-cell-size) 1fr;
   place-items: center;
   gap: 1rem;
   background-color: inherit;
@@ -300,8 +300,8 @@ button:hover::after,
   contain-intrinsic-size: 1px 300px;
 }
 
-.solution-step-item {
-  --puzzle-item-size: 2rem;
+.solution-step-cell {
+  --puzzle-cell-size: 2rem;
 }
 
 .solution-step-direction {

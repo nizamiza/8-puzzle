@@ -2,7 +2,7 @@ import Puzzle from './components/puzzle.js';
 import StepsAssembler from './components/steps-assembler.js';
 import {handleForm, handleInput} from './components/puzzle-form.js';
 import solvePuzzle from './components/puzzle-solver.js';
-import {manhattanDistance, invalidPlacedItemsCount} from './heuristics.js'
+import {manhattanDistance, invalidPlacedCellsCount} from './heuristics.js'
 import runPuzzleTests from './tests/puzzle-tests.js';
 import runMinHeapTests from './tests/min-heap-tests.js';
 import runPuzzleSolverTests from './tests/puzzle-solver-tests.js';
@@ -142,8 +142,8 @@ const main = () => {
     if (heuristicType === 'manhattan')
       heuristicFunction = manhattanDistance;
 
-    else if (heuristicType === 'incorrect-items-count')
-      heuristicFunction = invalidPlacedItemsCount;
+    else if (heuristicType === 'incorrect-cells-count')
+      heuristicFunction = invalidPlacedCellsCount;
 
     stepsAssembler = new StepsAssembler({
       puzzleSize,

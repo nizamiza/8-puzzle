@@ -5,15 +5,15 @@ class StepsAssembler {
   selectors;
   container;
   puzzleSize;
-  stepStateItemsSeparator;
+  stepStateCellsSeparator;
 
-  constructor({selectors, puzzleSize, stepStateItemsSeparator = '-'}) {
+  constructor({selectors, puzzleSize, stepStateCellsSeparator = '-'}) {
     const {containerId, stepClassName = 'solution-step'} = selectors;
     
     const {
       stepDirectionClassName = `${stepClassName}-direction`,
       stepIndexClassName = `${stepClassName}-index`,
-      stepItemClassName = `${stepClassName}-item`,
+      stepCellClassName = `${stepClassName}-cell`,
       solutionMessageClassName = `${stepClassName}-message`,
       stepPuzzleWrapperClassName = `${stepClassName}-puzzle`,
     } = selectors;
@@ -23,14 +23,14 @@ class StepsAssembler {
       stepClassName,
       stepDirectionClassName,
       stepIndexClassName,
-      stepItemClassName,
+      stepCellClassName,
       solutionMessageClassName,
       stepPuzzleWrapperClassName,
     };
 
     this.container = document.getElementById(containerId);
     this.puzzleSize = puzzleSize;
-    this.stepStateItemsSeparator = stepStateItemsSeparator;
+    this.stepStateCellsSeparator = stepStateCellsSeparator;
   }
 
   setSolving(isSolving) {
@@ -43,20 +43,20 @@ class StepsAssembler {
     }
   }
 
-  createStep(itemValue, itemMoveDirection) {
+  createStep(cellValue, cellMoveDirection) {
     const container = document.createElement('div');
-    const puzzleItem = document.createElement('div');
+    const puzzleCell = document.createElement('div');
     const direction = document.createElement('span');
   
     container.className = this.selectors.stepClassName;
-    puzzleItem.className = this.selectors.stepItemClassName;
+    puzzleCell.className = this.selectors.stepCellClassName;
     direction.className = this.selectors.stepDirectionClassName;
   
-    puzzleItem.textContent = itemValue;
-    direction.textContent = itemMoveDirection;
+    puzzleCell.textContent = cellValue;
+    direction.textContent = cellMoveDirection;
   
-    container.append(puzzleItem, direction);
-    container.setAttribute('data-direction', itemMoveDirection);
+    container.append(puzzleCell, direction);
+    container.setAttribute('data-direction', cellMoveDirection);
 
     return container;
   }
@@ -108,8 +108,8 @@ class StepsAssembler {
   };
 
   appendPuzzleToStep(stepElement, index) {
-    const stepItemValue = Number.parseInt(
-      stepElement.querySelector(`.${this.selectors.stepItemClassName}`).textContent
+    const stepCellValue = Number.parseInt(
+      stepElement.querySelector(`.${this.selectors.stepCellClassName}`).textContent
     );
 
     const puzzleWrapperId = `${this.getStepElementId(index)}-puzzle`;
@@ -128,14 +128,14 @@ class StepsAssembler {
       },
       size: this.puzzleSize,
       state: stepElement.getAttribute('data-state')
-        .split(this.stepStateItemsSeparator)
-        .map(itemValue => {
-          const itemParsedValue = Number.parseInt(itemValue);
+        .split(this.stepStateCellsSeparator)
+        .map(cellValue => {
+          const cellParsedValue = Number.parseInt(cellValue);
 
-          if (itemParsedValue === stepItemValue)
-            return itemParsedValue * -1;
+          if (cellParsedValue === stepCellValue)
+            return cellParsedValue * -1;
 
-          return itemParsedValue;
+          return cellParsedValue;
         }),
     });
   }
@@ -146,11 +146,11 @@ class StepsAssembler {
 
       if (stepElement) {
         stepElements.push(stepElement);
-        const item = stepElement.querySelector(`.${this.selectors.stepItemClassName}`);
+        const cell = stepElement.querySelector(`.${this.selectors.stepCellClassName}`);
 
         steps.push({
           direction: stepElement.getAttribute('data-direction'),
-          itemValue: Number.parseInt(item.textContent),
+          cellValue: Number.parseInt(cell.textContent),
         });
       }
 

@@ -11,18 +11,18 @@ export const range = (start = 0, end) => {
 }
 
 export const generateRandomState = (puzzleSize) => {
-	const itemsCount = typeof puzzleSize === 'number' ? puzzleSize ** 2 : (
+	const cellsCount = typeof puzzleSize === 'number' ? puzzleSize ** 2 : (
 		puzzleSize.cols * puzzleSize.rows
 	);
 
-	return range(itemsCount).reduce(state => {
-		let itemValue;
+	return range(cellsCount).reduce(state => {
+		let cellValue;
 		
 		do {
-			itemValue = Math.abs(Math.round(Math.random() * (itemsCount - 1)));
-		} while (state.includes(itemValue));
+			cellValue = Math.abs(Math.round(Math.random() * (cellsCount - 1)));
+		} while (state.includes(cellValue));
 
-		return [...state, itemValue];
+		return [...state, cellValue];
 	}, []);
 };
 

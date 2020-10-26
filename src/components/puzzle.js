@@ -3,11 +3,11 @@ import {generateRandomState, range} from '../utils.js';
 class Puzzle {
   container;
   size;
-  items;
+  cells;
   cursor;
-  itemsPositions;
+  cellsPositions;
   cursorPosition;
-  selectedItem;
+  selectedCell;
   cellHighlightedColor;
   cursorColor;
   selectors;
@@ -18,12 +18,12 @@ class Puzzle {
       containerId,
       cursorClassName = 'puzzle-cursor',
       cursorId,
-      itemClassName = 'puzzle-item',
+      cellClassName = 'puzzle-cell',
     },
     size,
     state,
   }) {
-    this.selectors = {containerId, cursorClassName, cursorId, itemClassName}
+    this.selectors = {containerId, cursorClassName, cursorId, cellClassName}
 
     this.cellHighlightedColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--cell-highlighted-color') || 'green';
@@ -32,10 +32,10 @@ class Puzzle {
       .getPropertyValue('--puzzle-cursor-color') || 'purple';
 
     this.size = typeof size === 'number' ? {cols: size, rows: size} : size;
-    this.items = [];
+    this.cells = [];
 
-    this.itemsPositions = [];
-    this.selectedItem = null;
+    this.cellsPositions = [];
+    this.selectedCell = null;
 
     this.container = document.getElementById(containerId);
 
@@ -52,9 +52,9 @@ class Puzzle {
 
     state[cursorCol + cursorRow * this.size.cols] = 0;
 
-    this.items.forEach((item, index) => {
-      const { col, row } = this.itemsPositions[index];
-      state[col + row * this.size.cols] = Number.parseInt(item.textContent);
+    this.cells.forEach((cell, index) => {
+      const { col, row } = this.cellsPositions[index];
+      state[col + row * this.size.cols] = Number.parseInt(cell.textContent);
     });
 
     return state;
@@ -62,34 +62,34 @@ class Puzzle {
 
   setState(state) {
     const cursorIndex = state.indexOf(0);
-    const stateItems = state.map((value, positionIndex) => ({value, positionIndex}))
+    const stateCells = state.map((value, positionIndex) => ({value, positionIndex}))
       .filter(({value}) => value !== 0);
 
-    this.cursorPosition = Puzzle.getItemPosition(cursorIndex, this.size);
-    Puzzle.setItemGridPosition(this.cursor, this.cursorPosition);
+    this.cursorPosition = Puzzle.getCellPosition(cursorIndex, this.size);
+    Puzzle.setCellGridPosition(this.cursor, this.cursorPosition);
 
-    stateItems.forEach(({value, positionIndex}, index) => {
+    stateCells.forEach(({value, positionIndex}, index) => {
       const highlighted = value < 0;
-      const itemPosition = Puzzle.getItemPosition(positionIndex, this.size);
+      const cellPosition = Puzzle.getCellPosition(positionIndex, this.size);
       
-      this.items[index].textContent = Math.abs(value);
-      this.itemsPositions[index] = itemPosition;
+      this.cells[index].textContent = Math.abs(value);
+      this.cellsPositions[index] = cellPosition;
 
-      Puzzle.setItemGridPosition(this.items[index], itemPosition);
+      Puzzle.setCellGridPosition(this.cells[index], cellPosition);
 
       if (highlighted)
-        this.items[index].style.backgroundColor = this.cellHighlightedColor;
+        this.cells[index].style.backgroundColor = this.cellHighlightedColor;
     });
 
-    this.setAvailableItems();
+    this.setAvailableCells();
   }
 
   handleDragStart(event) {
-    this.selectedItem = event.target;
+    this.selectedCell = event.target;
   }
 
   handleDragEnd(_event) {
-    this.selectedItem = null;
+    this.selectedCell = null;
   }
 
   handleDragOver(event) {
@@ -112,16 +112,16 @@ class Puzzle {
     if (!this.dragEventTargetIsCursor(event))
       return;
 
-    const itemIndex = this.items.indexOf(this.selectedItem);
-    const itemPosition = this.itemsPositions[itemIndex];
+    const cellIndex = this.cells.indexOf(this.selectedCell);
+    const cellPosition = this.cellsPositions[cellIndex];
 
-    Puzzle.setItemGridPosition(this.selectedItem, this.cursorPosition);
-    Puzzle.setItemGridPosition(this.cursor, itemPosition);
+    Puzzle.setCellGridPosition(this.selectedCell, this.cursorPosition);
+    Puzzle.setCellGridPosition(this.cursor, cellPosition);
 
     this.cursor.style.backgroundColor = this.cursorColor;
 
-    [this.itemsPositions[itemIndex], this.cursorPosition] = [this.cursorPosition, itemPosition];
-    this.setAvailableItems();
+    [this.cellsPositions[cellIndex], this.cursorPosition] = [this.cursorPosition, cellPosition];
+    this.setAvailableCells();
   }
 
   dragEventTargetIsCursor(event) {
@@ -153,14 +153,14 @@ class Puzzle {
     document.removeEventListener('drop',       this.handleDrop);
   }
 
-  setAvailableItems() {
-    this.items.forEach((item, index) => {
-      const itemPosition = this.itemsPositions[index];
+  setAvailableCells() {
+    this.cells.forEach((cell, index) => {
+      const cellPosition = this.cellsPositions[index];
 
-      if (!Puzzle.getItemMoveDirection(this.cursorPosition, itemPosition))
-        item.removeAttribute('draggable');
+      if (!Puzzle.getCellMoveDirection(this.cursorPosition, cellPosition))
+        cell.removeAttribute('draggable');
 
-      else item.setAttribute('draggable', 'true');
+      else cell.setAttribute('draggable', 'true');
     })
   }
 
@@ -176,16 +176,16 @@ class Puzzle {
     this.cursor.id = this.selectors.cursorId;
     this.cursor.className = this.selectors.cursorClassName;
 
-    range(1, this.size.cols * this.size.rows).forEach((itemValue, index) => {
-      const item = document.createElement('div');
+    range(1, this.size.cols * this.size.rows).forEach((cellValue, index) => {
+      const cell = document.createElement('div');
 
-      item.className = this.selectors.itemClassName;
-      item.textContent = itemValue;
+      cell.className = this.selectors.cellClassName;
+      cell.textContent = cellValue;
 
-      this.items.push(item);
-      this.itemsPositions.push(Puzzle.getItemPosition(index, this.size));
+      this.cells.push(cell);
+      this.cellsPositions.push(Puzzle.getCellPosition(index, this.size));
 
-      this.container.appendChild(item);
+      this.container.appendChild(cell);
     });
 
     this.container.appendChild(this.cursor);
@@ -195,7 +195,7 @@ class Puzzle {
       row: this.size.rows - 1,
     };
   
-    this.setAvailableItems();
+    this.setAvailableCells();
   }
 
   setRandomState() {
@@ -206,37 +206,37 @@ class Puzzle {
     this.setState([...range(1, this.size.cols * this.size.rows), 0]);
   }
 
-  static setItemGridPosition(item, position) {
+  static setCellGridPosition(cell, position) {
     const {col, row} = position;
     
-    item.style.gridColumn = col + 1;
-    item.style.gridRow = row + 1;
+    cell.style.gridColumn = col + 1;
+    cell.style.gridRow = row + 1;
   }
 
-  static getItemMoveDirection({col: cursorCol, row: cursorRow}, {col: itemCol, row: itemRow}) {
-    const verticalDelta = cursorCol - itemCol;
-    const horizontalDelta = cursorRow - itemRow;
+  static getCellMoveDirection({col: cursorCol, row: cursorRow}, {col: cellCol, row: cellRow}) {
+    const verticalDelta = cursorCol - cellCol;
+    const horizontalDelta = cursorRow - cellRow;
     
-    if (Math.abs(verticalDelta) === 1 && cursorRow === itemRow) {
+    if (Math.abs(verticalDelta) === 1 && cursorRow === cellRow) {
       return verticalDelta === 1 ? 'right' : 'left';
     }
 
-    if (Math.abs(horizontalDelta) === 1 && cursorCol === itemCol) {
+    if (Math.abs(horizontalDelta) === 1 && cursorCol === cellCol) {
       return horizontalDelta === 1 ? 'down' : 'up';
     }
 
     return null;
   };
 
-  static getItemPosition(itemIndex, puzzleSize) {
+  static getCellPosition(cellIndex, puzzleSize) {
     const {cols} = typeof puzzleSize === 'number' ? {
       cols: puzzleSize,
       rows: puzzleSize,
     } : puzzleSize;
     
     return {
-      col: itemIndex % cols,
-      row: Math.floor(itemIndex / cols),
+      col: cellIndex % cols,
+      row: Math.floor(cellIndex / cols),
     };
   }
 }

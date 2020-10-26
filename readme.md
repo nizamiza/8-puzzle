@@ -23,7 +23,7 @@ Algorithm is initialized with a single entry in the min heap and in the visited 
 1. Check if queue is empty. If it is - solution has not been found, exit.
 2. Pop (extract min) value from the priority queue.
 3. Check if its heuristic value is 0. If it is - solution has been found, exit.
-4. For each puzzle item, check if it can be moved. If yes:
+4. For each puzzle cell, check if it can be moved. If yes:
    - move it;
    - generate new state;
    - calculate its heuristic value;
@@ -33,8 +33,8 @@ Algorithm is initialized with a single entry in the min heap and in the visited 
 ### Heuristic functions
 
 This implementation contains two heuristic functions to choose from:
-- *Manhattan Distance* - sum of distances from current position of each puzzle item to its target position. Formula for the distance calculation is: `|x2 - x1| + |y2 - y1|`, where `x1`, `y1`, `x2`, `y2` are coordinates of the puzzle item, and its target position, respectively.
-- *Invalid placed items count* - count of invalid placed items.
+- *Manhattan Distance* - sum of distances from current position of each puzzle cell to its target position. Formula for the distance calculation is: `|x2 - x1| + |y2 - y1|`, where `x1`, `y1`, `x2`, `y2` are coordinates of the puzzle cell, and its target position, respectively.
+- *Invalid placed cells count* - count of invalid placed cells.
 
 Second options is obviously much worse, because it provides much less relevant information about the state of the puzzle. This is also projected in the final testing results.
 
@@ -110,7 +110,7 @@ Here are some results of node generation for the given amount of steps.
 | 5x5         | 519         | 22754       |
 | 5x5         | 542         | 122182      |
 
-**With Invalid placed items count heuristic**:
+**With Invalid placed cells count heuristic**:
 
 | Puzzle Size | Steps count | Nodes count |
 |-------------|-------------|-------------|
@@ -134,7 +134,7 @@ Here are some results of node generation for the given amount of steps.
 
 Here are average results of duration for each heuristic with random state generation:
 
-| Puzzle Size | Runs count | Manhattan Distance   | Invalid placed items count               |
+| Puzzle Size | Runs count | Manhattan Distance   | Invalid placed cells count               |
 |-------------|------------|----------------------|------------------------------------------|
 | 3           | 250        | ~0.0041777s          | ~0.0125658s                              |
 | 4           | 125        | ~0.0576453s          | ~0.35580458                              |
@@ -146,7 +146,7 @@ Greedy algorithm is not an ideal solution for 8, 15, or 24 puzzles, because it u
 
 ### Heuristic functions comparison
 
-As far as the heuristic functions go, it is evident from the results that *Manhattan Distance* heuristic is much more efficient than *Invalid placed items count*, both in time and memory complexities.
+As far as the heuristic functions go, it is evident from the results that *Manhattan Distance* heuristic is much more efficient than *Invalid placed cells count*, both in time and memory complexities.
 
 ### Why JavaScript?
 

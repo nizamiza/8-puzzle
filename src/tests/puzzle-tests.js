@@ -2,9 +2,9 @@ import Puzzle from '../components/puzzle.js';
 import {range, generateRandomState} from '../utils.js';
 
 
-export const getPuzzleItemPositionTest = (state, puzzleSize) => {
-  return state.reduce(({testPassed, passedTestsCount}, currentItem, currentIndex) => {
-    const { col, row } = Puzzle.getItemPosition(currentIndex, puzzleSize);
+export const getPuzzleCellPositionTest = (state, puzzleSize) => {
+  return state.reduce(({testPassed, passedTestsCount}, currentCell, currentIndex) => {
+    const { col, row } = Puzzle.getCellPosition(currentIndex, puzzleSize);
 
     const expectedCol = currentIndex % puzzleSize;
     const expectedRow = Math.floor(currentIndex / puzzleSize);
@@ -16,7 +16,7 @@ export const getPuzzleItemPositionTest = (state, puzzleSize) => {
 
     if (!currentTestPassed) {
       console.warn(
-        `Position test for puzzle item ${currentItem} has failed!`,
+        `Position test for puzzle cell ${currentCell} has failed!`,
         `Position was expected to be: col = ${expectedCol}, row = ${expectedRow}.`,
         `But result was: col = ${col}, row = ${row}`,
       );
@@ -38,11 +38,11 @@ const runTests = (runsCount = 5) => {
     const puzzleSize = Math.round(Math.random() * 2 + 3);
     const state = generateRandomState(puzzleSize);
 
-    const {testPassed, passedTestsCount} = getPuzzleItemPositionTest(state, puzzleSize);
+    const {testPassed, passedTestsCount} = getPuzzleCellPositionTest(state, puzzleSize);
 
     if (!testPassed) {
       console.warn(
-        'Puzzle item position function tests have failed!',
+        'Puzzle cell position function tests have failed!',
         `Successfully passed tests count: ${passedTestsCount} / ${state.length}`,
       );
     }

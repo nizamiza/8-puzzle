@@ -1,6 +1,6 @@
 import solvePuzzle from '../components/puzzle-solver.js';
 import StepsAssembler from '../components/steps-assembler.js';
-import {manhattanDistance, invalidPlacedItemsCount} from '../heuristics.js';
+import {manhattanDistance, invalidPlacedCellsCount} from '../heuristics.js';
 
 
 const puzzleSolverTest = ({
@@ -55,7 +55,7 @@ const runPuzzleSolverTests = () => {
 
   puzzleSolverTest({
     puzzleSize: 3,
-    heuristicFunction: invalidPlacedItemsCount,
+    heuristicFunction: invalidPlacedCellsCount,
     initialState: [1, 2, 3, 4, 5, 6, 7, 8, 0],
     targetState: [1, 2, 3, 4, 6, 8, 7, 5, 0],
     correctDirections: ['right', 'down', 'left', 'up'],
@@ -63,7 +63,7 @@ const runPuzzleSolverTests = () => {
 
   puzzleSolverTest({
     puzzleSize: 4,
-    heuristicFunction: invalidPlacedItemsCount,
+    heuristicFunction: invalidPlacedCellsCount,
     initialState: [1, 3, 0, 4, 5, 2, 6, 7, 9, 10, 12, 8, 13, 14, 11, 15],
     targetState: [1, 2, 3, 4, 5, 6, 8, 12, 9, 11, 14, 7, 13, 10, 0, 15],
     correctDirections: ['right', 'up', 'left', 'up', 'left', 'down', 'right', 'up', 'up', 'right', 'down', 'left', 'up'],

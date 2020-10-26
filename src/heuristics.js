@@ -10,15 +10,15 @@ export const manhattanDistance = (currentState, targetState, puzzleSize) => {
 
     const targetIndex = targetState.indexOf(currentValue);
 
-    const {col: currentCol, row: currentRow} = Puzzle.getItemPosition(currentIndex, puzzleSize);
-    const {col: targetCol, row: targetRow} = Puzzle.getItemPosition(targetIndex, puzzleSize);
+    const {col: currentCol, row: currentRow} = Puzzle.getCellPosition(currentIndex, puzzleSize);
+    const {col: targetCol, row: targetRow} = Puzzle.getCellPosition(targetIndex, puzzleSize);
 
     return heuristicValue + Math.abs(currentCol - targetCol) + Math.abs(currentRow - targetRow);
   }, 0);
 };
 
 
-export const invalidPlacedItemsCount = (currentState, targetState) => {
+export const invalidPlacedCellsCount = (currentState, targetState) => {
 
   return currentState.reduce((heuristicValue, currentValue, currentIndex) => {
 
