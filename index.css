@@ -81,6 +81,7 @@ button {
 
 .puzzle-wrapper {
   display: grid;
+  grid-template-columns: 1fr;
   justify-self: center;
   place-items: center;
   gap: .75rem;
@@ -96,6 +97,7 @@ button {
 
 .puzzle-wrapper h3 {
   margin: 0;
+  grid-column: 1 / -1;
 }
 
 .form {
@@ -177,6 +179,15 @@ select {
   place-items: center;
   gap: calc(var(--puzzle-item-size) / 4);
   margin: 1rem 0;
+}
+
+.puzzle {
+  justify-self: stretch;
+  padding: 1rem;
+  border-radius: 6px;
+  place-content: center;
+  grid-column: 1 / -1;
+  background-color: var(--translucent-black);
 }
 
 .solution-step-item,
@@ -324,6 +335,7 @@ button:hover::after,
 
 @media only screen and (min-width: 640px) {
   .content-wrapper,
+  .puzzle-wrapper,
   .puzzles {
     grid-template-columns: 1fr 1fr;
   }
