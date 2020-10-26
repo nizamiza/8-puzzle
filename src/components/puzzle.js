@@ -52,8 +52,6 @@ class Puzzle {
 
     state[cursorCol + cursorRow * this.size.cols] = 0;
 
-    console.log(cursorCol + cursorRow * this.size.cols);
-
     this.items.forEach((item, index) => {
       const { col, row } = this.itemsPositions[index];
       state[col + row * this.size.cols] = Number.parseInt(item.textContent);

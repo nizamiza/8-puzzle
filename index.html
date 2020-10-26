@@ -6,72 +6,98 @@
   <title>8 Puzzle</title>
   <script src="/src/main.js" type="module" defer></script>
   <link rel="stylesheet" href="index.css">
+  <link rel="shortcut icon" href="https://dummyimage.com/600x400/000/fff&text=8" type="image/jpg">
 </head>
 <body>
   <main>
-    <form class="form" id="puzzle-form">
-      <label for="puzzle-size-cols">Puzzle columns:</label>
-      <input type="range" id="puzzle-size-cols" name="puzzle-size-cols" value="3" min="3" max="10" list="puzzle-sizes">
-      <label for="puzzle-size-rows">Puzzle rows:</label>
-      <input type="range" id="puzzle-size-rows" name="puzzle-size-rows" value="3" min="3" max="10" list="puzzle-sizes">
-      <datalist id="puzzle-sizes">
-        <option value="3" label="3"></option>
-        <option value="4" label="4"></option>
-        <option value="5" label="5"></option>
-        <option value="6" label="6"></option>
-        <option value="7" label="7"></option>
-        <option value="8" label="8"></option>
-        <option value="9" label="9"></option>
-        <option value="10" label="10"></option>
-      </datalist>
-      <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
-    </form>
-    <section class="puzzles">
-      <section class="puzzle-wrapper">
-        <h3>Initial state:</h3>
-        <section id="initial-state" class="puzzle"></section>
-        <button class="puzzle-randomize-button" id="initial-state-randomize-button">
-          Randomize
-        </button>
-        <button class="puzzle-reset-button" id="initial-state-reset-button">
-          Reset
-        </button>
+    <h2>The <span id="puzzle-size">8</span>-puzzle</h2>
+    <section class="content-wrapper">
+      <form class="form" id="puzzle-form">
+        <label for="puzzle-size-cols">Puzzle columns:</label>
+        <input type="range" id="puzzle-size-cols" name="puzzle-size-cols" value="3" min="3" max="10" list="puzzle-sizes">
+        <label for="puzzle-size-rows">Puzzle rows:</label>
+        <input type="range" id="puzzle-size-rows" name="puzzle-size-rows" value="3" min="3" max="10" list="puzzle-sizes">
+        <datalist id="puzzle-sizes">
+          <option value="3" label="3"></option>
+          <option value="4" label="4"></option>
+          <option value="5" label="5"></option>
+          <option value="6" label="6"></option>
+          <option value="7" label="7"></option>
+          <option value="8" label="8"></option>
+          <option value="9" label="9"></option>
+          <option value="10" label="10"></option>
+        </datalist>
+        <button class="form-submit-button" id="puzzle-form-submit-button" type="submit">Generate</button>
+      </form>
+      <section class="puzzles">
+        <section class="puzzle-wrapper">
+          <h3>Initial state:</h3>
+          <form class="form" id="initial-state-form">
+            <input
+              id="puzzle-state"
+              name="puzzle-state"
+              type="text"
+              aria-label="Enter initial state"
+              required
+            >
+            <button type="submit">Set state</button>
+          </form>
+          <section id="initial-state" class="puzzle"></section>
+          <button class="puzzle-randomize-button" id="initial-state-randomize-button">
+            Randomize
+          </button>
+          <button class="puzzle-reset-button" id="initial-state-reset-button">
+            Reset
+          </button>
+        </section>
+        <section class="puzzle-wrapper">
+          <h3>Target state:</h3>
+          <form class="form" id="target-state-form">
+            <input
+              id="puzzle-state"
+              name="puzzle-state"
+              type="text"
+              aria-label="Enter target state"
+              required
+            >
+            <button type="submit">Set state</button>
+          </form>
+          <section id="target-state" class="puzzle"></section>
+          <button class="puzzle-randomize-button" id="target-state-randomize-button">
+            Randomize
+          </button>
+          <button class="puzzle-reset-button" id="target-state-reset-button">
+            Reset
+          </button>
+        </section>
       </section>
-      <section class="puzzle-wrapper">
-        <h3>Target state:</h3>
-        <section id="target-state" class="puzzle"></section>
-        <button class="puzzle-randomize-button" id="target-state-randomize-button">
-          Randomize
-        </button>
-        <button class="puzzle-reset-button" id="target-state-reset-button">
-          Reset
-        </button>
-      </section>
+      <form class="form" id="solve-puzzle-form">
+        <label for="heuristic-type">Heuristic type:</label>
+        <select
+          type="text"
+          id="heuristic-type"
+          name="heuristic-type"
+          value="manhattan"
+        >
+          <option value="manhattan">Manhattan Distance</option>
+          <option value="incorrect-items-count">Invalid placed items count</option>
+        </select>
+        <label for="minimized-output">
+          <input type="checkbox" id="minimized-output" name="minimized-output">
+          Minimize output
+        </label>
+        <label for="reversed-steps">
+          <input type="checkbox" id="reversed-steps" name="reversed-steps">
+          Reverse steps
+        </label>
+        <button class="form-submit-button" id="solve-button" type="submit">Solve</button>
+      </form>
     </section>
-    <form class="form" id="solve-puzzle-form">
-      <label for="heuristic-type">Heuristic type:</label>
-      <select
-        type="text"
-        id="heuristic-type"
-        name="heuristic-type"
-        value="manhattan"
-      >
-        <option value="manhattan">Manhattan Distance</option>
-        <option value="incorrect-items-count">Invalid placed items count</option>
-      </select>
-      <label for="minimized-output">
-        <input type="checkbox" id="minimized-output" name="minimized-output">
-        Minimize output
-      </label>
-      <label for="reversed-steps">
-        <input type="checkbox" id="reversed-steps" name="reversed-steps">
-        Reverse steps
-      </label>
-      <button class="form-submit-button" id="solve-button" type="submit">Solve</button>
-    </form>
-    <h4 id="solution-title">Solution steps:</h4>
-    <section id="solution-steps">
-      Solution steps will appear here...
+    <section class="content-wrapper" id="solution-steps-wrapper">
+      <h4 id="solution-title">Solution steps:</h4>
+      <section id="solution-steps">
+        Solution steps will appear here...
+      </section>
     </section>
   </main>
 </body>

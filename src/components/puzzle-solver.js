@@ -38,7 +38,6 @@ const solvePuzzle = ({
   stepsAssembler,
   targetState,
 }) => {
-  console.log(initialState);
   stepsAssembler.clearContainer();
 
   const startTime = performance.now();

@@ -28,14 +28,40 @@ const createPuzzles = (puzzleSize) => {
   ];
 };
 
+const setDataOpenAttribute = (element, value) => {
+  if (value)
+    element.setAttribute('data-open', value)
+  else
+    element.removeAttribute('data-open');
+};
+
+const handleStateForm = (formId, puzzle) => {
+  const input = document.getElementById(formId).querySelector('input');
+
+  input.pattern = `^([0-9]+[\\s-]?){${puzzle.size.cols * puzzle.size.rows}}$`;
+
+  handleForm(formId, (formData) => {
+    const state = formData.get('puzzle-state');
+    const parsedState = state.split(/[\s-]+/).map(value => Number.parseInt(value));
+    
+    puzzle.setState(parsedState);
+  });
+}
+
 const main = () => {
   const solvePuzzleFormId = 'solve-puzzle-form';
   const solvePuzzleForm = document.getElementById(solvePuzzleFormId);
+
   const puzzleWrappers = document.querySelectorAll('.puzzle-wrapper');
+  const solutionStepsWrapper = document.getElementById('solution-steps-wrapper');
+
+  const titlePuzzleSize = document.getElementById('puzzle-size');
+  const shortcutIcon = document.head.querySelector('link[rel="shortcut icon"]');
 
   let initialStatePuzzle;
   let targetStatePuzzle;
   let heuristicFunction;
+  let stepsAssembler;
 
   let puzzleSize = {
     cols: 3,
@@ -58,6 +84,18 @@ const main = () => {
     setLabelText(currentValue);
   }
 
+  const setPagePuzzleSizeInfo = () => {
+    const size = (puzzleSize.cols * puzzleSize.rows) - 1;
+
+    const bgColor = document.documentElement.style.getPropertyValue('--background-color');
+    const fgColor = document.documentElement.style.getPropertyValue('--foreground-color');
+
+    titlePuzzleSize.textContent = size;
+    shortcutIcon.href = `https://dummyimage.com/192x192/${bgColor}/${fgColor}&text=${size}`;
+  } 
+
+  setPagePuzzleSizeInfo();
+
   setPuzzleSizeInputChangeHandler('col');
   setPuzzleSizeInputChangeHandler('row');
   
@@ -73,10 +111,20 @@ const main = () => {
     if (targetStatePuzzle)
       targetStatePuzzle.removeEventListeners();
 
+    if (stepsAssembler)
+      stepsAssembler.clearContainer();
+
     [initialStatePuzzle, targetStatePuzzle] = createPuzzles(puzzleSize);
 
-    puzzleWrappers.forEach(wrapper => wrapper.setAttribute('data-open', 'true'));
-    solvePuzzleForm.setAttribute('data-open', 'true');
+    puzzleWrappers.forEach(wrapper => setDataOpenAttribute(wrapper, true));
+  
+    setDataOpenAttribute(solvePuzzleForm, true);
+    setDataOpenAttribute(solutionStepsWrapper, true);
+
+    handleStateForm('initial-state-form', initialStatePuzzle);
+    handleStateForm('target-state-form', targetStatePuzzle);
+
+    setPagePuzzleSizeInfo();
   });
 
   handleForm(solvePuzzleFormId, (formData) => {
@@ -90,7 +138,7 @@ const main = () => {
     else if (heuristicType === 'incorrect-items-count')
       heuristicFunction = invalidPlacedItemsCount;
 
-    const stepsAssembler = new StepsAssembler({
+    stepsAssembler = new StepsAssembler({
       puzzleSize,
       selectors: {
         containerId: 'solution-steps',

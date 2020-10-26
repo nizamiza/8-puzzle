@@ -9,13 +9,13 @@
   --puzzle-item-size: 2.25rem;
 
   --color-light: #efefef;
-  --background-color: var(--color-light);
+  --background-color: white;
   --foreground-color: #202124;
   --cell-color: #0765a3;
-  --cell-highlighted-color: #0a9649;
-  --puzzle-cursor-color: #a5055d;
+  --cell-highlighted-color: #118847;
+  --puzzle-cursor-color: #c21172;
   --border-radius: 3px;
-  --translucent-black: rgba(0, 0, 0, .12);
+  --translucent-black: rgba(0, 0, 0, .03);
 
   --transition-duration-fast: 100ms;
   --button-box-shadow:
@@ -32,14 +32,19 @@ body {
   color: var(--foreground-color);
 }
 
-main {
+main,
+.content-wrapper {
   display: grid;
-  grid-template-columns: 1fr;
-  place-content: center;
   place-items: center;
   padding: 2rem;
   gap: 3rem;
   text-align: center;
+}
+
+.content-wrapper {
+  place-content: center;
+  padding: 0;
+  grid-template-columns: 1fr;
 }
 
 button {
@@ -68,7 +73,7 @@ button {
 
 .puzzles {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   place-items: center;
   gap: inherit;
   grid-column: 1 / -1;
@@ -95,7 +100,6 @@ button {
 
 .form {
   display: grid;
-  max-width: 400px;
   width: 100%;
   align-items: center;
   gap: 1rem;
@@ -117,6 +121,7 @@ input {
   border: 0;
   border-bottom: 1px solid grey;
   border-radius: var(--border-radius);
+  font-size: inherit;
 }
 
 input[type="range"],
@@ -142,6 +147,7 @@ select {
   padding: .45em 1em;
   border-radius: var(--border-radius);
   background-color: darkslateblue;
+  font-size: inherit;
   border: none;
   color: var(--color-light);
   cursor: pointer;
@@ -152,7 +158,6 @@ select {
   opacity: 0;
   transform: scaleY(0);
   transition: transform ease-in-out 250ms, opacity ease-in-out 500ms;
-
 }
 
 #solve-puzzle-form[data-open] {
@@ -207,9 +212,6 @@ button::after,
   height: 200%;
   background-color: rgba(255, 255, 255, .16);
   border-radius: 100vw;
-  transition:
-    top ease-in-out var(--transition-duration-fast),
-    left ease-in-out var(--transition-duration-fast);
 }
 
 button:hover::after,
@@ -224,7 +226,7 @@ button:hover::after,
 }
 
 .puzzle-reset-button {
-  background-color: darkslategrey;
+  background-color: var(--cell-highlighted-color);
 }
 
 .puzzle-randomize-button,
@@ -232,12 +234,25 @@ button:hover::after,
   justify-self: stretch;
 }
 
+#solution-steps-wrapper {
+  justify-self: stretch;
+  justify-items: stretch;
+  opacity: 0;
+  transform: scaleY(0);
+  transition: transform ease-in-out 250ms, opacity ease-in-out 500ms;
+}
+
+#solution-steps-wrapper[data-open] {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
 #solution-steps {
   display: grid;
   gap: 1rem;
   grid-template-columns:
     repeat(auto-fit, minmax(calc(
-      var(--puzzle-item-size) * var(--puzzle-cols) + var(--puzzle-cols) * 1.5em
+      var(--puzzle-item-size) * var(--puzzle-cols) + var(--puzzle-cols) * 2em
     ), 1fr));
   justify-self: stretch;
   background-color: var(--translucent-black);
@@ -250,6 +265,7 @@ button:hover::after,
 
 #solution-steps[data-solving="true"] {
   background-color: darkslateblue;
+  color: var(--color-light);
 }
 
 #solution-title {
@@ -262,7 +278,7 @@ button:hover::after,
   grid-template-columns: 1fr var(--puzzle-item-size) 1fr;
   place-items: center;
   gap: 1rem;
-  background-color: rgba(255, 240, 255, .08);
+  background-color: inherit;
   padding: inherit;
   border-radius: inherit;
   content-visibility: auto;
@@ -298,11 +314,13 @@ button:hover::after,
     --cell-color: #174f74;
     --cell-highlighted-color: #177441;
     --puzzle-cursor-color: #80134f;
+    --translucent-black: rgba(0, 0, 0, .12);
   }
 }
 
 @media only screen and (min-width: 640px) {
-  main {
+  .content-wrapper,
+  .puzzles {
     grid-template-columns: 1fr 1fr;
   }
 }
