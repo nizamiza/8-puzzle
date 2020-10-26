@@ -321,6 +321,28 @@ button:hover::after,
   grid-column: 1 / -1;
 }
 
+#bulk-tests {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+#bulk-tests[aria-hidden] {
+  display: none;
+}
+
+#bulk-tests h3 {
+  margin: 0;
+}
+
+#bulk-tests-form label {
+  justify-content: flex-start;
+}
+
+#bulk-test-results {
+  display: grid;
+  gap: 1rem;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-light: #efefef;

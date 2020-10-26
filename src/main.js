@@ -2,11 +2,12 @@ import Puzzle from './components/puzzle.js';
 import StepsAssembler from './components/steps-assembler.js';
 import {handleForm, handleInput} from './components/puzzle-form.js';
 import solvePuzzle from './components/puzzle-solver.js';
+import bulkTests from './components/bulk-tests.js';
 import {manhattanDistance, invalidPlacedCellsCount} from './heuristics.js'
 import runPuzzleTests from './tests/puzzle-tests.js';
 import runMinHeapTests from './tests/min-heap-tests.js';
 import runPuzzleSolverTests from './tests/puzzle-solver-tests.js';
-import { range } from './utils.js';
+import {range} from './utils.js';
 
 
 const createPuzzles = (puzzleSize) => {
@@ -76,7 +77,7 @@ const main = () => {
     const label = document.querySelector(`label[for="${inputId}"]`);
 
     const setLabelText = (value) => {
-      label.textContent = `Puzzle ${dimension}s (current = ${value}):`
+      label.textContent = `Puzzle ${dimension}s (current = ${value}):`;
     };
 
     const currentValue = puzzleSize[`${dimension}s`];
@@ -193,3 +194,4 @@ runPuzzleTests();
 runMinHeapTests();
 runPuzzleSolverTests();
 main();
+bulkTests();

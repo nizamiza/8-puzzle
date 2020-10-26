@@ -11,6 +11,34 @@
 <body>
   <main>
     <h2>The <span id="puzzle-size">8</span>-puzzle</h2>
+    <label for="run-bulk-tests">
+      <input type="checkbox" id="run-bulk-tests" name="run-bulk-tests">
+      Run bulk tests?
+    </label>
+    <section class="content-wrapper" id="bulk-tests" aria-hidden="true">
+      <h3>Bulk Tests</h3>
+      <form class="form" id="bulk-tests-form">
+        <label for="tests-amount">Tests amount:</label>
+        <input required type="number" name="tests-amount" id="tests-amount">
+        <label for="bulk-tests-puzzle-size-cols">Puzzle columns:</label>
+        <input type="range" id="bulk-tests-puzzle-size-cols" name="puzzle-size-cols" value="3" min="3" max="10" list="puzzle-sizes">
+        <label for="bulk-tests-puzzle-size-rows">Puzzle rows:</label>
+        <input type="range" id="bulk-tests-puzzle-size-rows" name="puzzle-size-rows" value="3" min="3" max="10" list="puzzle-sizes">
+        <select
+          type="text"
+          id="heuristic-type"
+          name="heuristic-type"
+          value="manhattan"
+        >
+          <option value="manhattan">Manhattan Distance</option>
+          <option value="incorrect-cells-count">Invalid placed cells count</option>
+        </select>
+        <button type="submit">Run</button>
+      </form>
+      <label for="bulk-tests-progress">Progress will appear here:</label>
+      <progress id="bulk-tests-progress" max="100" value="0"></progress>
+      <section id="bulk-test-results"></section>
+    </section>
     <section class="content-wrapper">
       <form class="form" id="puzzle-form">
         <label for="puzzle-size-cols">Puzzle columns:</label>

@@ -26,7 +26,6 @@ export const generateRandomState = (puzzleSize) => {
 	}, []);
 };
 
-
 export const millisecondsToSeconds = (milliseconds, toFixed) => {
 	const seconds = milliseconds / 1000;
 

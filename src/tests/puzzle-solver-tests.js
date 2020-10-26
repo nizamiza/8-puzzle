@@ -19,13 +19,18 @@ const puzzleSolverTest = ({
     },
   });
   
-  const steps = solvePuzzle({
+  const {steps} = solvePuzzle({
     initialState,
     targetState,
     heuristicFunction,
     puzzleSize,
     stepsAssembler,
   });
+
+  if (!steps) {
+    stepsAssembler.clearContainer();
+    return false;
+  }
 
   const directions = steps.map(step => step.direction);
 

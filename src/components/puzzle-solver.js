@@ -38,10 +38,11 @@ const solvePuzzle = ({
   stepsAssembler,
   targetState,
 }) => {
-  stepsAssembler.clearContainer();
+  if (stepsAssembler)
+    stepsAssembler.clearContainer();
 
   const startTime = performance.now();
-  
+
   const size = typeof puzzleSize === 'number' ? {cols: puzzleSize, rows: puzzleSize} : puzzleSize;
   const cursorIndex = initialState.indexOf(0);
 
@@ -62,8 +63,9 @@ const solvePuzzle = ({
   while (priorityQueue.size() > 0) {
 
     if (millisecondsToSeconds(performance.now() - startTime) > 15) {
-      stepsAssembler.addMessage('Execution took too much time ⏳. Failed to find Solution 😔');
-      return null;
+      if (stepsAssembler)
+        stepsAssembler.addMessage('Execution took too much time ⏳. Failed to find Solution 😔' );
+      return {steps: null, stats: null};
     }
 
     const {cursorIndex, heuristicValue, state, stateKey: parentStateKey} = priorityQueue.pop();
@@ -71,7 +73,16 @@ const solvePuzzle = ({
     if (heuristicValue === 0) {
 
       const endTime = performance.now();
-      const timeElapsed = millisecondsToSeconds(endTime - startTime, 5);
+      const timeElapsed = endTime - startTime;
+      const nodesAmount = visitedStates.size;
+
+      const stats = {timeElapsed, nodesAmount};
+
+      if (!stepsAssembler) {
+        return {steps: null, stats};
+      }
+
+      const timeElapsedSeconds = millisecondsToSeconds(timeElapsed, 5);
 
       const sectionDivider = '--------------------------';
 
@@ -79,7 +90,7 @@ const solvePuzzle = ({
       stepsAssembler.addMessage(sectionDivider);
 
       const nodesCountMessage = stepsAssembler.addMessage(
-        `Nodes created 🧱: ${visitedStates.size}`
+        `Nodes created 🧱: ${nodesAmount}`
       );
 
       const steps = stepsAssembler.assembleSteps({
@@ -95,7 +106,7 @@ const solvePuzzle = ({
       });
 
       const timeElapsedMessage = stepsAssembler.addMessage({
-        messageText: `Time elapsed ⏰: ${timeElapsed}s`,
+        messageText: `Time elapsed ⏰: ${timeElapsedSeconds}s`,
         appendAfter: stepsCountMessage,
       });
       
@@ -115,7 +126,7 @@ const solvePuzzle = ({
         appendAfter: 'last-message',
       });
 
-      return steps;
+      return {steps, stats};
     }
 
     const cursorPosition = Puzzle.getCellPosition(cursorIndex, size);
@@ -146,7 +157,7 @@ const solvePuzzle = ({
 
       visitedStates.set(newStateKey, {
         parentKey: parentStateKey,
-        stepElement: stepsAssembler.createStep(value, moveDirection)
+        stepElement: stepsAssembler ? stepsAssembler.createStep(value, moveDirection) : null,
       });
 
       priorityQueue.push({
@@ -158,8 +169,10 @@ const solvePuzzle = ({
     });
   }
 
-  stepsAssembler.addMessage('Failed to find solution 😭');
-  return null;
+  if (stepsAssembler)
+    stepsAssembler.addMessage('Failed to find solution 😭');
+
+  return {steps: null, timeElapsed: null};
 };
 
 export default solvePuzzle;
