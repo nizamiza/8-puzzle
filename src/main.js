@@ -6,6 +6,7 @@ import {manhattanDistance, invalidPlacedItemsCount} from './heuristics.js'
 import runPuzzleTests from './tests/puzzle-tests.js';
 import runMinHeapTests from './tests/min-heap-tests.js';
 import runPuzzleSolverTests from './tests/puzzle-solver-tests.js';
+import { range } from './utils.js';
 
 
 const createPuzzles = (puzzleSize) => {
@@ -37,8 +38,10 @@ const setDataOpenAttribute = (element, value) => {
 
 const handleStateForm = (formId, puzzle) => {
   const input = document.getElementById(formId).querySelector('input');
+  const maxSize = puzzle.size.cols * puzzle.size.rows
 
-  input.pattern = `^([0-9]+[\\s-]?){${puzzle.size.cols * puzzle.size.rows}}$`;
+  input.pattern = `^([0-9]+[\\s-]?){${maxSize}}$`;
+  input.placeholder = [...range(1, maxSize), 0].join(' ');
 
   handleForm(formId, (formData) => {
     const state = formData.get('puzzle-state');
@@ -91,7 +94,9 @@ const main = () => {
     const fgColor = document.documentElement.style.getPropertyValue('--foreground-color');
 
     titlePuzzleSize.textContent = size;
+
     shortcutIcon.href = `https://dummyimage.com/192x192/${bgColor}/${fgColor}&text=${size}`;
+    document.title = `${size} puzzle`;
   } 
 
   setPagePuzzleSizeInfo();
