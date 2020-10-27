@@ -83,7 +83,6 @@ const solvePuzzle = ({
       }
 
       const timeElapsedSeconds = millisecondsToSeconds(timeElapsed, 5);
-
       const sectionDivider = '--------------------------';
 
       stepsAssembler.addMessage('Solution has been found 😊');
@@ -105,7 +104,7 @@ const solvePuzzle = ({
         appendAfter: nodesCountMessage,
       });
 
-      const timeElapsedMessage = stepsAssembler.addMessage({
+      stepsAssembler.addMessage({
         messageText: `Time elapsed ⏰: ${timeElapsedSeconds}s`,
         appendAfter: stepsCountMessage,
       });
