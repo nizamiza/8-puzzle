@@ -109,17 +109,6 @@ const solvePuzzle = ({
         messageText: `Time elapsed ⏰: ${timeElapsedSeconds}s`,
         appendAfter: stepsCountMessage,
       });
-      
-      if ('memory' in performance) {
-        const memory = performance.memory
-        const used = (memory.usedJSHeapSize / 1024).toFixed(2);
-        const total =  (memory.jsHeapSizeLimit / 1024).toFixed(2);
-
-        stepsAssembler.addMessage({
-          messageText: `Heap memory used 💹: ${used}KB / ${total}KB`,
-          appendAfter: timeElapsedMessage,
-        })
-      }
 
       stepsAssembler.addMessage({
         messageText: sectionDivider,
